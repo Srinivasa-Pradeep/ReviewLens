@@ -175,9 +175,9 @@ export default function Home() {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/[0.02] border border-white/[0.05] text-[10px] font-mono tracking-wider uppercase text-neutral-400 mb-6"
+          className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[var(--surface)] border border-[var(--border-color)] text-[10px] font-mono tracking-wider uppercase text-[var(--accent-muted)] mb-6"
         >
-          <Sparkles className="w-3 h-3 text-neutral-400" />
+          <Sparkles className="w-3 h-3 text-[var(--accent-muted)]" />
           <span>Engine v1.011 // Core Intelligence</span>
         </motion.div>
         
@@ -185,17 +185,17 @@ export default function Home() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-4 font-sans"
+          className="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--foreground)] mb-4 font-sans"
         >
           Insights from reviews. <br />
-          <span className="text-neutral-500">In seconds.</span>
+          <span className="text-[var(--accent-muted)] opacity-70">In seconds.</span>
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="max-w-md mx-auto text-sm text-neutral-400 font-sans leading-relaxed"
+          className="max-w-md mx-auto text-sm text-[var(--accent-muted)] font-sans leading-relaxed"
         >
           Submit a product URL, paste reviews, or upload a CSV file to extract structured consumer verdict and roadmap diagnostics.
         </motion.p>
@@ -308,7 +308,7 @@ export default function Home() {
                     <label className="block text-[10px] font-mono text-neutral-500 uppercase tracking-widest mb-2">
                       Choose CSV File
                     </label>
-                    <div className="border border-dashed border-white/[0.06] rounded-xl p-8 flex flex-col items-center justify-center hover:border-white/[0.16] hover:bg-white/[0.01] transition-all duration-300 cursor-pointer bg-transparent">
+                    <div className="border border-dashed border-[var(--border-color)] rounded-xl p-8 flex flex-col items-center justify-center hover:border-[var(--border-hover)] hover:bg-[var(--surface-hover)] transition-all duration-300 cursor-pointer bg-transparent">
                       <input
                         type="file"
                         accept=".csv"
@@ -319,7 +319,7 @@ export default function Home() {
                       />
                       <label htmlFor="csv-file-picker" className="cursor-pointer flex flex-col items-center w-full">
                         <Upload className="w-6 h-6 text-neutral-500 mb-3" />
-                        <span className="text-xs text-neutral-300 font-sans font-medium">
+                        <span className="text-xs text-[var(--foreground)] opacity-90 font-sans font-medium">
                           {csvFile ? csvFile.name : "Select CSV review sheet"}
                         </span>
                         <span className="text-[10px] text-neutral-500 mt-1.5 font-mono">
@@ -450,7 +450,7 @@ export default function Home() {
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
-                    <ChevronRight className="w-3.5 h-3.5 text-neutral-500 group-hover:text-white transition-colors" />
+                    <ChevronRight className="w-3.5 h-3.5 text-neutral-500 group-hover:text-[var(--foreground)] transition-colors" />
                   </div>
                 </div>
               ))}
