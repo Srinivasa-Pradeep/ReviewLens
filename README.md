@@ -1,6 +1,6 @@
 # ReviewLens
 
-> Turn thousands of reviews into insights in seconds.
+> Turn thousands of product reviews into insights in seconds.
 
 ReviewLens is an AI-powered review analytics platform designed for both B2C Consumers (Buyers) and E-commerce Businesses (Sellers). Built with a premium, high-end Apple-style dark glassmorphism aesthetic, it parses raw review texts, crawls URL targets, or processes CSV datasets to yield immediate summaries, buying verdicts, complaint priority lists, and feature roadmap recommendations.
 
