@@ -264,6 +264,13 @@ async def get_dataset_analysis(dataset_id: int, db: AsyncSession = Depends(get_d
     )
 
 
+@app.delete("/api/datasets")
+async def clear_all_datasets(db: AsyncSession = Depends(get_db)):
+    from sqlalchemy import delete
+    await db.execute(delete(models.ProductDataset))
+    await db.commit()
+    return {"message": "All datasets and analysis results cleared successfully"}
+
 @app.delete("/api/datasets/{dataset_id}")
 async def delete_dataset(dataset_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(models.ProductDataset).where(models.ProductDataset.id == dataset_id))

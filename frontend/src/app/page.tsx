@@ -180,6 +180,18 @@ export default function Home() {
     }
   };
 
+  const clearAllHistory = async () => {
+    if (!confirm("Are you sure you want to clear all analysis history? This will delete all saved product insights and cannot be undone.")) return;
+    try {
+      const res = await fetch('http://localhost:8000/api/datasets', { method: 'DELETE' });
+      if (res.ok) {
+        fetchHistory();
+      }
+    } catch (err) {
+      console.error("Failed to clear history", err);
+    }
+  };
+
   const getSourceIcon = (type: string) => {
     switch (type) {
       case 'csv': return <Upload className="w-4 h-4 text-emerald-400" />;
@@ -459,9 +471,19 @@ export default function Home() {
 
           {/* History / Previously Parsed Datasets */}
           <div className="glass-panel p-6">
-            <h3 className="text-xs font-mono text-[var(--accent-muted)] uppercase tracking-widest mb-4">
-              Analysis History
-            </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xs font-mono text-[var(--accent-muted)] uppercase tracking-widest">
+                Analysis History
+              </h3>
+              {history.length > 0 && (
+                <button
+                  onClick={clearAllHistory}
+                  className="text-[10px] font-mono text-red-500 hover:text-red-400 cursor-pointer transition-colors bg-transparent border-0 p-0 flex items-center space-x-1"
+                >
+                  <span>Clear All</span>
+                </button>
+              )}
+            </div>
             
             {history.length === 0 ? (
               <div className="text-center py-6 text-xs text-[var(--accent-muted)] font-mono">

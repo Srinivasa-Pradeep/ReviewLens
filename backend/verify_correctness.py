@@ -61,6 +61,16 @@ def test_ingestion_and_classification():
     
     assert "spacebar" in kb_timeline.lower() or "key" in kb_timeline.lower() or "typing" in kb_timeline.lower(), "Keyboard classification failed!"
     print("[SUCCESS] Keyboard classified correctly!")
+    
+    # 4. Test clear all endpoint
+    print("Testing bulk clear all datasets...")
+    r = httpx.delete(f"{BASE_URL}/api/datasets")
+    assert r.status_code == 200, "Failed to clear all datasets"
+    
+    # Verify history is now empty
+    r = httpx.get(f"{BASE_URL}/api/datasets")
+    assert len(r.json()) == 0, "Clear all datasets failed to empty the database table!"
+    print("[SUCCESS] Bulk clear all datasets and analysis history verified successfully!")
 
 if __name__ == "__main__":
     test_ingestion_and_classification()
