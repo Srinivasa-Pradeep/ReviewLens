@@ -180,14 +180,18 @@ async def ingest_url(
     request: schemas.UrlAnalyzeRequest,
     db: AsyncSession = Depends(get_db)
 ):
+    # Extract product name from URL if possible to avoid stale name field from front-end
+    url_name = analyzer.extract_product_name_from_url(request.url)
+    display_name = url_name if url_name else (request.name if request.name.strip() else "Analyzed Product")
+
     # Dynamically generate category-appropriate mock reviews based on url / dataset name keywords
-    mock_reviews = analyzer.get_mock_reviews_for_url(request.name, request.url)
+    mock_reviews = analyzer.get_mock_reviews_for_url(display_name, request.url)
     
     final_payload = ingestion.process_and_budget_reviews(mock_reviews)
 
     # 1. Create dataset entry
     dataset = models.ProductDataset(
-        name=request.name,
+        name=display_name,
         source_type="url",
         raw_content=final_payload
     )
@@ -195,8 +199,8 @@ async def ingest_url(
     await db.flush()
 
     # 2. Extract buyer and seller insights
-    buyer_data = await analyzer.extract_buyer_insights(final_payload, request.name)
-    seller_data = await analyzer.extract_seller_insights(final_payload, request.name)
+    buyer_data = await analyzer.extract_buyer_insights(final_payload, display_name)
+    seller_data = await analyzer.extract_seller_insights(final_payload, display_name)
 
     # 3. Save analysis results
     analysis = models.AnalysisResult(
