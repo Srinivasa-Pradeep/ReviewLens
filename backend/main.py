@@ -180,9 +180,9 @@ async def ingest_url(
     request: schemas.UrlAnalyzeRequest,
     db: AsyncSession = Depends(get_db)
 ):
-    # Extract product name from URL if possible to avoid stale name field from front-end
+    # Extract product name from URL if possible
     url_name = analyzer.extract_product_name_from_url(request.url)
-    display_name = url_name if url_name else (request.name if request.name.strip() else "Analyzed Product")
+    display_name = url_name if url_name else (request.name if (request.name and request.name.strip()) else "Analyzed Product")
 
     # Dynamically generate category-appropriate mock reviews based on url / dataset name keywords
     mock_reviews = analyzer.get_mock_reviews_for_url(display_name, request.url)

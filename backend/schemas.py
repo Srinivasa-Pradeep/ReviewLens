@@ -99,7 +99,7 @@ class TextPasteRequest(BaseModel):
     text: str = Field(..., description="Raw text of reviews pasted by user")
 
 class UrlAnalyzeRequest(BaseModel):
-    name: str = Field(..., description="A friendly name for this dataset")
+    name: Optional[str] = Field(None, description="A friendly name for this dataset")
     url: str = Field(..., description="Product URL to analyze")
 
 class DatasetResponse(BaseModel):

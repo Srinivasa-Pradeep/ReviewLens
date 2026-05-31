@@ -93,7 +93,7 @@ export default function Home() {
 
   const handleIngest = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!datasetName.trim()) {
+    if (activeTab !== 'url' && !datasetName.trim()) {
       setErrorMsg("Please specify a friendly name for this dataset.");
       return;
     }
@@ -102,7 +102,9 @@ export default function Home() {
     setStatusMessage("Connecting to analysis engine...");
 
     const formData = new FormData();
-    formData.append('name', datasetName);
+    if (activeTab !== 'url') {
+      formData.append('name', datasetName);
+    }
 
     let endpoint = 'http://localhost:8000/api/ingest/text';
 
@@ -140,7 +142,7 @@ export default function Home() {
         response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: datasetName, url: productUrl }),
+          body: JSON.stringify({ url: productUrl }),
         });
       } else {
         response = await fetch(endpoint, {
@@ -274,19 +276,21 @@ export default function Home() {
 
             {/* Ingestion Forms */}
             <form onSubmit={handleIngest} className="space-y-4">
-              <div>
-                <label className="block text-xs font-mono text-neutral-400 uppercase tracking-widest mb-1.5">
-                  Dataset Reference Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Smart Watch Series 8 Reviews"
-                  value={datasetName}
-                  onChange={(e) => setDatasetName(e.target.value)}
-                  className="w-full glass-input px-3.5 py-2.5 text-sm"
-                  disabled={isLoading}
-                />
-              </div>
+              {activeTab !== 'url' && (
+                <div>
+                  <label className="block text-xs font-mono text-neutral-400 uppercase tracking-widest mb-1.5">
+                    Dataset Reference Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Smart Watch Series 8 Reviews"
+                    value={datasetName}
+                    onChange={(e) => setDatasetName(e.target.value)}
+                    className="w-full glass-input px-3.5 py-2.5 text-sm"
+                    disabled={isLoading}
+                  />
+                </div>
+              )}
 
               {activeTab === 'text' && (
                 <div>
