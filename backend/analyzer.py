@@ -140,7 +140,16 @@ def get_mock_reviews_for_url(product_name: str, url: str) -> list:
             "The stitching around the collar is thin and began to run after my second use.",
             "Great fabric quality and breathability. Definitely recommend it for running/wearing.",
         ]
-    # 4. Keyboards & Input Devices
+    # 4. Monitors & Display Screens
+    elif any(k in combined for k in ["monitor", "screen", "display", "tv", "television", "displayport", "hdmi"]):
+        return [
+            f"The monitor purchased from {url} works beautifully. The colors are extremely vibrant and the contrast is excellent.",
+            "Love the high refresh rate, but the display panel has a bit of backlight bleed in the corners.",
+            "Excellent price point for a 4K display. The stand feels a bit wobbly when typing.",
+            "The built-in speakers sound tinny, but the screen panel quality makes up for it.",
+            "Great color accuracy for editing. Definitely recommend it for gaming or design work.",
+        ]
+    # 5. Keyboards & Input Devices
     elif any(k in combined for k in ["keyboard", "mouse", "trackpad", "keypad", "typing", "keeb"]):
         return [
             f"The keyboard purchased from {url} works beautifully. The keystrokes feel tactile and responsive.",
@@ -149,7 +158,7 @@ def get_mock_reviews_for_url(product_name: str, url: str) -> list:
             "The keycap legends are slightly thin and the backlight does not shine through clearly.",
             "Great wireless typing performance. Definitely recommend it for anyone writing or gaming.",
         ]
-    # 5. Audio & Microphones
+    # 6. Audio & Microphones
     elif any(k in combined for k in ["mic", "microphone", "headphone", "headset", "earphone", "earbud", "speaker", "audio", "sound", "voice"]):
         return [
             f"The microphone purchased from {url} works perfectly. The vocal clarity is crisp and clean.",
@@ -158,7 +167,7 @@ def get_mock_reviews_for_url(product_name: str, url: str) -> list:
             "The desk stand transfers vibration noise whenever I type on my desk.",
             "Great voice recording quality. Definitely recommend it for podcasting or meetings.",
         ]
-    # 6. Home / Office / Desk Organizer / Furniture
+    # 7. Home / Office / Desk Organizer / Furniture
     elif any(k in combined for k in ["organizer", "organiser", "desk", "chair", "table", "shelf", "furniture", "storage", "rack", "stand", "holder", "riser"]):
         return [
             f"The organizer purchased from {url} helps declutter my desk perfectly. Setup was clean.",
@@ -167,7 +176,7 @@ def get_mock_reviews_for_url(product_name: str, url: str) -> list:
             "The drawer sliders have some friction when loaded with books and accessories.",
             "Great organization capacity and sturdiness. Definitely recommend it for a cleaner workspace.",
         ]
-    # 7. Default
+    # 8. Default
     else:
         return [
             f"The items purchased from {url} work perfectly. Onboarding was straightforward.",
@@ -379,7 +388,73 @@ def get_mock_data_for_product(product_name: str, reviews_text: str = "") -> dict
             ]
         }
 
-    # Category 4: Keyboards & Input Devices
+    # Category 4: Monitors & Display Screens
+    elif any(k in combined for k in ["monitor", "screen", "display", "tv", "television", "displayport", "hdmi"]):
+        return {
+            "summary": f"Reviewers are highly impressed with the {product_name}'s vibrant colors, sharp resolution, and high refresh rate. The panel offers excellent viewing angles and thin bezels. However, many note noticeable backlight bleed in dark rooms and a slightly wobbly stand.",
+            "pros": [
+                {"term": "Vibrant Color Accuracy", "count": 26, "percentage": 86.0},
+                {"term": "Smooth High Refresh Rate", "count": 20, "percentage": 78.0},
+                {"term": "Ultra-Thin Bezels", "count": 15, "percentage": 65.0},
+                {"term": "Excellent 4K Resolution", "count": 11, "percentage": 50.0}
+            ],
+            "cons": [
+                {"term": "Backlight Bleed in Corners", "count": 18, "percentage": 48.0},
+                {"term": "Wobbly Screen Stand", "count": 12, "percentage": 35.0},
+                {"term": "Tinny Audio Output", "count": 8, "percentage": 25.0}
+            ],
+            "thematic": [
+                {"category": "Value for Money", "score": 4.3},
+                {"category": "Build Quality", "score": 3.9},
+                {"category": "Ease of Use", "score": 4.5},
+                {"category": "Reliability", "score": 4.1}
+            ],
+            "comparison": f"Compared to standard office displays, the {product_name} provides superior color space coverage (99% sRGB) and gaming response times, though the stand lacks height adjustments found in professional monitors.",
+            "highlights": [
+                {"category": "Panel", "quote": "The IPS panel is gorgeous. Colors are rich and deep, making games and videos look fantastic.", "sentiment": "Positive"},
+                {"category": "Bleed", "quote": "Noticeable IPS glow and backlight bleeding along the bottom edge when displaying dark scenes.", "sentiment": "Negative"},
+                {"category": "Speakers", "quote": "Built-in speakers are very weak and lack bass, but fine for system sounds.", "sentiment": "Neutral"}
+            ],
+            "complaints": [
+                {"issue": "Backlight Bleeding & IPS Glow", "impact_score": 7, "volume": 15, "severity": SeverityEnum.MEDIUM, "root_cause": "Uneven pressure along the display bezel during casing assembly."},
+                {"issue": "Unstable & Wobbly Base Stand", "impact_score": 6, "volume": 12, "severity": SeverityEnum.LOW, "root_cause": "Small footprint mounting bracket without sufficient counterweight."},
+                {"issue": "HDR Mode Washing Out Colors", "impact_score": 8, "volume": 9, "severity": SeverityEnum.HIGH, "root_cause": "Low peak brightness of 300 nits failing to meet true HDR standards."}
+            ],
+            "timeline": [
+                {"stage_or_time": "Day 1 (Setup)", "issue": "Unstable mounting base", "diagnostic": "Mounted the stand and plugged it in. The thin bezels look gorgeous on my desk."},
+                {"stage_or_time": "Week 2", "issue": "Dead pixels panel scan", "diagnostic": "Noticed a dead pixel near the top right corner. Very distracting on white screens."},
+                {"stage_or_time": "Month 3", "issue": "Auto-input source failure", "diagnostic": "Auto-input source switching sometimes fails and requires manual power cycles."}
+            ],
+            "requests": [
+                {"feature": "Fully Adjustable Ergonomic Stand", "count": 22, "sample_quote": "Please make the stand height-adjustable and support vertical pivot."},
+                {"feature": "Include a DisplayPort Cable", "count": 14, "sample_quote": "It only came with an HDMI cable, had to buy a DisplayPort cable to get full refresh rates."}
+            ],
+            "clusters": [
+                {"category": ClusterCategory.QUALITY, "issue": "Dead pixels on panel", "frequency": 9},
+                {"category": ClusterCategory.UX, "issue": "On-screen menu buttons hard to reach", "frequency": 12},
+                {"category": ClusterCategory.DELIVERY, "issue": "Box arrived damaged but screen was intact", "frequency": 5},
+                {"category": ClusterCategory.SERVICE, "issue": "Support replaced wobbly unit with no questions", "frequency": 14},
+                {"category": ClusterCategory.PRICING, "issue": "Best value high refresh rate screen", "frequency": 20}
+            ],
+            "fixes": [
+                "Tighten factory quality control tolerances for dead pixel inspections.",
+                "Redesign base attachment bracket with reinforced steel screws to increase stability."
+            ],
+            "improvements": [
+                "Upgrade display backlight diffuse sheet to reduce localized bleed.",
+                "Bundle high-speed DisplayPort cables in the box instead of standard HDMI."
+            ],
+            "roadmap": [
+                "Develop a model with integrated USB-C hub supporting 65W power delivery for laptops.",
+                "Increase maximum panel peak brightness to 600 nits for certified HDR support."
+            ],
+            "gaps": [
+                "Our refresh rate is 144Hz which beats standard 60Hz panels, but we lack built-in webcam modules.",
+                "Competitors feature integrated KVM switches which our model currently lacks."
+            ]
+        }
+
+    # Category 5: Keyboards & Input Devices
     elif any(k in combined for k in ["keyboard", "mouse", "trackpad", "keypad", "typing", "keeb"]):
         return {
             "summary": f"Reviewers of {product_name} are highly satisfied with its typing comfort, tactile switch feedback, and sleek layout. The wireless connectivity is responsive with low latency. However, some complain about key stabilizer rattle on the spacebar and the lack of shine-through keycaps.",
