@@ -6,7 +6,7 @@ ReviewLens is an AI-powered review analytics platform designed for both B2C Cons
 
 ---
 
-## 🏗️ Architectural Overview
+## Architectural Overview
 
 ```
                           +-------------------------+
@@ -47,7 +47,7 @@ ReviewLens is an AI-powered review analytics platform designed for both B2C Cons
 
 ---
 
-## ⚙️ Tech Stack
+## Tech Stack
 
 - **Frontend**: Next.js 16 (App Router), TypeScript, Tailwind CSS v4, Framer Motion, Recharts, Lucide Icons
 - **Backend**: Python 3.9+, FastAPI, Uvicorn, Pydantic v2, Instructor, Tiktoken, Pandas
@@ -56,7 +56,7 @@ ReviewLens is an AI-powered review analytics platform designed for both B2C Cons
 
 ---
 
-## 📂 Folder Structure
+## Folder Structure
 
 ```
 reviewlens/
@@ -81,7 +81,7 @@ reviewlens/
 
 ---
 
-## ⚡ Setup & Local Running
+## Setup & Local Running
 
 Ensure you have Python 3.9+ and Node.js v20+ installed.
 
@@ -107,22 +107,22 @@ npm run dev
 
 ---
 
-## 🗳️ Dual-Mode Features
+## Dual-Mode Features
 
-### 🛒 Buyer Mode
+### Buyer Mode
 - ** definitive Buying Verdict**: Dynamic glowing verdict badges ("Strong Buy", "Buy with Caution", "Only Buy on Discount", "Avoid") to indicate buying feasibility.
 - **Sentiment Overview**: Recharts donut visualizations displaying positive, neutral, and negative ratio metrics.
 - **Top Pros & Cons**: Ranked pros/cons containing frequency bars.
 - **Thematic Scores**: Visual dimensions detailing Build Quality, Value, and Usability.
 
-### 🏢 Seller Mode
+### Seller Mode
 - **Ranked Complaint Matrix**: Tracks product faults, customer volume, and severity rating.
 - **Root Cause Journey**: Chronological vertical diagnostics timeline trackingDay 1 unboxing problems through month 3 degradation.
 - **Strategic Fix Lists**: Prioritized recommendation lists (Immediate Fixes, Roadmap, Competitor Gaps).
 
 ---
 
-## 🚀 Deployment to Vercel
+## Deployment to Vercel
 
 The Next.js App Router is optimized for direct hosting on Vercel:
 
