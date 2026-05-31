@@ -9,6 +9,7 @@ interface Dataset {
   id: number;
   name: string;
   source_type: string;
+  source_url?: string;
   created_at: string;
 }
 
@@ -117,6 +118,7 @@ export default function Home() {
         id: Date.now(), // Unique ID
         name: result.name,
         source_type: result.source_type,
+        source_url: result.source_url,
         buyer_insights: result.buyer_insights,
         seller_insights: result.seller_insights,
         created_at: new Date().toISOString()

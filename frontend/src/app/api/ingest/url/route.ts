@@ -31,6 +31,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       name: displayName,
       source_type: 'url',
+      source_url: cleanedUrl,
       buyer_insights: buyerInsights,
       seller_insights: sellerInsights
     });
