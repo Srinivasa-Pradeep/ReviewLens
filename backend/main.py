@@ -1,6 +1,6 @@
 import os
 import json
-from fastapi import FastAPI, Depends, UploadFile, File, Form, HTTPException, status
+from fastapi import FastAPI, Depends, UploadFile, File, Form, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -26,6 +26,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def add_cache_control_header(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
 
 @app.on_event("startup")
 async def startup_event():
@@ -87,8 +96,8 @@ async def ingest_text(
     await db.flush()
 
     # 2. Run Structured analysis concurrently
-    buyer_data = await analyzer.extract_buyer_insights(final_payload)
-    seller_data = await analyzer.extract_seller_insights(final_payload)
+    buyer_data = await analyzer.extract_buyer_insights(final_payload, name)
+    seller_data = await analyzer.extract_seller_insights(final_payload, name)
 
     # Convert Pydantic schemas to standard JSON/dict for SQLAlchemy JSON columns
     buyer_dict = json.loads(buyer_data.model_dump_json())
@@ -142,8 +151,8 @@ async def ingest_csv(
     await db.flush()
 
     # 2. Extract buyer and seller insights
-    buyer_data = await analyzer.extract_buyer_insights(final_payload)
-    seller_data = await analyzer.extract_seller_insights(final_payload)
+    buyer_data = await analyzer.extract_buyer_insights(final_payload, name)
+    seller_data = await analyzer.extract_seller_insights(final_payload, name)
 
     # 3. Save analysis results
     analysis = models.AnalysisResult(
@@ -171,14 +180,8 @@ async def ingest_url(
     request: schemas.UrlAnalyzeRequest,
     db: AsyncSession = Depends(get_db)
 ):
-    # Simulating url scraping content. E.g. scraping reviews from Amazon/Shopify
-    mock_reviews = [
-        f"The items purchased from {request.url} work perfectly. Setup was straightforward.",
-        "Beautiful design, but the battery drains twice as fast as my old model.",
-        "Excellent price point. Material feels premium. Standard shipping took 4 days.",
-        "The software companion keeps dropping Bluetooth pairing. Hope they fix it.",
-        "Great quality. Definitely recommend it for anyone looking to save time.",
-    ]
+    # Dynamically generate category-appropriate mock reviews based on url / dataset name keywords
+    mock_reviews = analyzer.get_mock_reviews_for_url(request.name, request.url)
     
     final_payload = ingestion.process_and_budget_reviews(mock_reviews)
 
@@ -192,8 +195,8 @@ async def ingest_url(
     await db.flush()
 
     # 2. Extract buyer and seller insights
-    buyer_data = await analyzer.extract_buyer_insights(final_payload)
-    seller_data = await analyzer.extract_seller_insights(final_payload)
+    buyer_data = await analyzer.extract_buyer_insights(final_payload, request.name)
+    seller_data = await analyzer.extract_seller_insights(final_payload, request.name)
 
     # 3. Save analysis results
     analysis = models.AnalysisResult(

@@ -43,7 +43,13 @@ export default function Home() {
 
   const fetchHistory = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/datasets');
+      const res = await fetch('http://localhost:8000/api/datasets', {
+        cache: 'no-store',
+        headers: {
+          'Pragma': 'no-cache',
+          'Cache-Control': 'no-cache'
+        }
+      });
       if (res.ok) {
         const data = await res.json();
         setHistory(data);

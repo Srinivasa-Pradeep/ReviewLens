@@ -134,7 +134,13 @@ function DashboardContent() {
     setIsLoading(true);
     setErrorMsg('');
     try {
-      const res = await fetch(`http://localhost:8000/api/datasets/${id}`);
+      const res = await fetch(`http://localhost:8000/api/datasets/${id}`, {
+        cache: 'no-store',
+        headers: {
+          'Pragma': 'no-cache',
+          'Cache-Control': 'no-cache'
+        }
+      });
       if (!res.ok) {
         throw new Error("Could not find analysis results for this dataset.");
       }
