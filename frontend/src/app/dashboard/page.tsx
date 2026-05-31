@@ -234,13 +234,13 @@ function DashboardContent() {
             <ArrowLeft className="w-4 h-4 text-slate-700 dark:text-neutral-300" />
           </button>
           <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{data.name}</h1>
             {data.source_type === 'url' && (
-              <div className="text-[10px] font-mono text-slate-500 dark:text-neutral-500 mb-0.5">
+              <div className="text-[10px] font-mono text-slate-500 dark:text-neutral-500 mt-1.5">
                 <span className="uppercase tracking-wider">Source: </span>
                 <a href={data.source_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-800 dark:hover:text-slate-200 transition-colors break-all normal-case font-normal">{data.source_url || "URL"}</a>
               </div>
             )}
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{data.name}</h1>
           </div>
         </div>
 
