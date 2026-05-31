@@ -26,11 +26,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark h-full">
+    <html lang="en" className="h-full">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function() {
+            try {
+              var theme = localStorage.getItem('reviewlens_theme');
+              if (!theme) {
+                theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+              }
+              document.documentElement.classList.remove('light', 'dark');
+              document.documentElement.classList.add(theme);
+            } catch (e) {}
+          })();
+        `}} />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased flex flex-col`}>
         <Header />
@@ -41,8 +53,8 @@ export default function RootLayout({
         </main>
 
         {/* Muted Premium Footer */}
-        <footer className="border-t border-white/[0.06] py-6 bg-black">
-          <div className="max-w-7xl mx-auto px-4 text-center text-xs text-neutral-500 font-mono">
+        <footer className="border-t border-[var(--border-color)] py-6 bg-[var(--background)] transition-colors duration-300">
+          <div className="max-w-7xl mx-auto px-4 text-center text-xs text-[var(--accent-muted)] font-mono transition-colors">
             &copy; {new Date().getFullYear()} ReviewLens. Made for buyers and sellers. All rights reserved.
           </div>
         </footer>

@@ -209,7 +209,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="glass-panel bg-[#070707]/60 border border-white/[0.06] p-6 sm:p-8 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.6)]"
+          className="glass-panel p-6 sm:p-8 rounded-2xl"
         >
           <div className="flex items-center space-x-2 mb-6">
             <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
@@ -218,10 +218,10 @@ export default function Home() {
           </div>
 
           {/* Source Toggles (Segmented Control style) */}
-          <div className="relative flex p-1 rounded-lg bg-white/[0.02] border border-white/[0.04] mb-8">
+          <div className="relative flex p-1 rounded-lg bg-[var(--surface)] border border-[var(--border-color)] mb-8">
             {/* Sliding background */}
             <div 
-              className="absolute inset-y-1 transition-all duration-300 ease-out bg-white/[0.04] rounded-md border border-white/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.4)]" 
+              className="absolute inset-y-1 transition-all duration-300 ease-out bg-[var(--background)] rounded-md border border-[var(--border-color)] shadow-[0_1px_3px_rgba(0,0,0,0.15)]" 
               style={{
                 width: 'calc(33.333% - 6px)',
                 left: activeTab === 'url' ? '4px' : activeTab === 'text' ? 'calc(33.333% + 2px)' : 'calc(66.666% + 0px)'
@@ -232,7 +232,7 @@ export default function Home() {
               type="button"
               onClick={() => setActiveTab('url')}
               className={`relative z-10 flex-1 py-2 text-[10px] font-mono tracking-wider uppercase transition-colors duration-200 flex items-center justify-center space-x-1.5 cursor-pointer ${
-                activeTab === 'url' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'
+                activeTab === 'url' ? 'text-[var(--foreground)] font-semibold' : 'text-[var(--accent-muted)] hover:text-[var(--foreground)]'
               }`}
             >
               <LinkIcon className="w-3.5 h-3.5" />
@@ -242,7 +242,7 @@ export default function Home() {
               type="button"
               onClick={() => setActiveTab('text')}
               className={`relative z-10 flex-1 py-2 text-[10px] font-mono tracking-wider uppercase transition-colors duration-200 flex items-center justify-center space-x-1.5 cursor-pointer ${
-                activeTab === 'text' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'
+                activeTab === 'text' ? 'text-[var(--foreground)] font-semibold' : 'text-[var(--accent-muted)] hover:text-[var(--foreground)]'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
@@ -252,7 +252,7 @@ export default function Home() {
               type="button"
               onClick={() => setActiveTab('csv')}
               className={`relative z-10 flex-1 py-2 text-[10px] font-mono tracking-wider uppercase transition-colors duration-200 flex items-center justify-center space-x-1.5 cursor-pointer ${
-                activeTab === 'csv' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'
+                activeTab === 'csv' ? 'text-[var(--foreground)] font-semibold' : 'text-[var(--accent-muted)] hover:text-[var(--foreground)]'
               }`}
             >
               <Upload className="w-3.5 h-3.5" />
@@ -361,7 +361,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3.5 px-4 bg-white text-black hover:bg-neutral-100 transition-all duration-200 font-semibold rounded-lg text-xs tracking-wider uppercase font-mono flex items-center justify-center space-x-2 disabled:opacity-30 cursor-pointer active:scale-[0.99] transform"
+              className="w-full py-3.5 px-4 bg-[var(--button-bg)] text-[var(--button-text)] hover:bg-[var(--button-hover)] transition-all duration-200 font-semibold rounded-lg text-xs tracking-wider uppercase font-mono flex items-center justify-center space-x-2 disabled:opacity-30 cursor-pointer active:scale-[0.99] transform"
             >
               {isLoading ? (
                 <>
@@ -384,7 +384,7 @@ export default function Home() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mt-6 pt-6 border-t border-white/[0.06] flex items-center space-x-3 text-xs font-mono text-neutral-500"
+                className="mt-6 pt-6 border-t border-[var(--border-color)] flex items-center space-x-3 text-xs font-mono text-neutral-500"
               >
                 <Loader2 className="w-3.5 h-3.5 animate-spin text-neutral-400" />
                 <span className="animate-pulse">{statusMessage}</span>
@@ -415,7 +415,7 @@ export default function Home() {
           </div>
 
           {history.length === 0 ? (
-            <div className="text-center py-8 rounded-xl border border-white/[0.04] bg-white/[0.01] text-xs text-neutral-600 font-mono">
+            <div className="text-center py-8 rounded-xl border border-[var(--border-color)] bg-white/[0.01] text-xs text-neutral-600 font-mono">
               No active records
             </div>
           ) : (
@@ -424,14 +424,14 @@ export default function Home() {
                 <div
                   key={item.id}
                   onClick={() => router.push(`/dashboard?id=${item.id}&t=${Date.now()}`)}
-                  className="group relative w-full p-3 rounded-xl bg-[#070707]/40 border border-white/[0.04] hover:bg-white/[0.02] hover:border-white/[0.1] transition-all flex items-center justify-between cursor-pointer"
+                  className="group relative w-full p-3 rounded-xl bg-[var(--surface)] border border-[var(--border-color)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] transition-all flex items-center justify-between cursor-pointer"
                 >
                   <div className="flex items-center space-x-3 min-w-0">
-                    <div className="p-2 rounded-lg bg-black/40 border border-white/[0.04] flex items-center justify-center">
+                    <div className="p-2 rounded-lg bg-[var(--surface)] border border-[var(--border-color)] flex items-center justify-center">
                       {getSourceIcon(item.source_type)}
                     </div>
                     <div className="truncate">
-                      <p className="text-xs font-medium text-neutral-300 group-hover:text-white transition-colors truncate">
+                      <p className="text-xs font-medium text-[var(--foreground)] opacity-85 group-hover:opacity-100 transition-all truncate">
                         {item.name}
                       </p>
                       <p className="text-[9px] text-neutral-500 font-mono mt-0.5">
