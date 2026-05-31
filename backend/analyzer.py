@@ -112,9 +112,45 @@ def parse_simple_keywords(text: str) -> dict:
     }
 
 def extract_product_name_from_url(url: str) -> str:
-    """Extracts a readable product name slug from Amazon or standard retail URLs."""
+    """Extracts a readable product name from Amazon or standard retail URLs.
+    First tries fetching the page to parse the HTML title tag. Falls back to path parsing if it fails.
+    """
     if not url:
         return ""
+        
+    # 1. Try fetching actual page title from URL first
+    try:
+        import urllib.request
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+        req = urllib.request.Request(url, headers=headers)
+        # Bounded 4-second timeout to avoid locking the thread too long
+        with urllib.request.urlopen(req, timeout=4) as response:
+            html = response.read().decode('utf-8', errors='ignore')
+            title_match = re.search(r'<title>(.*?)</title>', html, re.IGNORECASE)
+            if title_match:
+                raw_title = title_match.group(1).strip()
+                
+                # Cleanup common Amazon suffix/prefixes
+                suffixes = [
+                    "Amazon.in", "Amazon.com", "Amazon.co.uk", "Amazon.ca", "Amazon.de", "Amazon.fr", "Amazon.co.jp",
+                    ": Amazon.in", ": Amazon.com", "Buy Online at Low Prices in India", "Online at Low Prices",
+                    "Home & Kitchen", "Office Products", "Electronics", "Clothing & Accessories", "Books",
+                    "Online Shopping", "| Amazon"
+                ]
+                cleaned = raw_title
+                for suffix in suffixes:
+                    cleaned = re.sub(rf"\b{re.escape(suffix)}\b", "", cleaned, flags=re.IGNORECASE)
+                    cleaned = cleaned.strip(" :|")
+                cleaned = re.sub(r"^(Buy|Amazon\.\w+\s*:\s*)", "", cleaned, flags=re.IGNORECASE).strip(" :|")
+                cleaned = re.sub(r"\s+", " ", cleaned).strip()
+                if cleaned:
+                    return cleaned
+    except Exception as e:
+        print(f"[Warning] Failed to fetch page title for URL {url}: {str(e)}. Falling back to slug parsing.")
+
+    # 2. Path-based slug parsing fallback
     try:
         parts = url.split("/")
         for i, part in enumerate(parts):
@@ -643,6 +679,132 @@ MOCK_TEMPLATES = {
             "Competitors offer a QR code inside the book linking to private reader forums."
         ]
     },
+    "mouse": {
+        "summary": "Reviewers of {product_name} are highly satisfied with its ergonomic grip, precise sensor tracking, and tactile click feedback. The wireless connectivity is responsive with minimal latency. However, some complain about scroll wheel rattle and side buttons placement.",
+        "pros": [
+            {"term": "Ergonomic Grip Comfort", "count": 24, "percentage": 82.0},
+            {"term": "Precise Sensor Tracking", "count": 18, "percentage": 75.0},
+            {"term": "Tactile Clicks Feedback", "count": 15, "percentage": 62.0},
+            {"term": "Long Rechargeable Battery", "count": 11, "percentage": 45.0}
+        ],
+        "cons": [
+            {"term": "Scroll Wheel Rattle", "count": 16, "percentage": 50.0},
+            {"term": "Stiff Side Buttons", "count": 10, "percentage": 32.0},
+            {"term": "Confusing Custom Software", "count": 7, "percentage": 22.0}
+        ],
+        "thematic": [
+            {"category": "Value for Money", "score": 4.2},
+            {"category": "Build Quality", "score": 4.1},
+            {"category": "Ease of Use", "score": 4.5},
+            {"category": "Reliability", "score": 4.3}
+        ],
+        "comparison": "Compared to standard office mice, the {product_name} offers superior ergonomic support and customizable DPI settings, though the scroll wheel feels less robust than premium gaming alternatives.",
+        "highlights": [
+            {"category": "Ergonomics", "quote": "The shape fits my hand perfectly, reducing wrist fatigue during long work days.", "sentiment": "Positive"},
+            {"category": "Scroll Wheel", "quote": "The scroll wheel feels slightly loose and wobbles when scrolled quickly.", "sentiment": "Negative"},
+            {"category": "Clicks", "quote": "Left and right clicks are quiet and satisfying.", "sentiment": "Neutral"}
+        ],
+        "complaints": [
+            {"issue": "Scroll Wheel Rattle & Play", "impact_score": 6, "volume": 16, "severity": SeverityEnum.MEDIUM, "root_cause": "Loose stabilizer mounts inside the wheel assembly."},
+            {"issue": "Side Buttons Hard to Reach", "impact_score": 5, "volume": 10, "severity": SeverityEnum.MEDIUM, "root_cause": "Button placement is optimized for large hand profiles only."},
+            {"issue": "Software Driver Disconnections", "impact_score": 7, "volume": 7, "severity": SeverityEnum.HIGH, "root_cause": "Incompatibilities with macOS background helper processes."}
+        ],
+        "timeline": [
+            {"stage_or_time": "Day 1 (Unboxing)", "issue": "Ergonomic fit feels natural", "diagnostic": "Requires a day of regular use to get accustomed to the high thumb rest angle."},
+            {"stage_or_time": "Week 2", "issue": "Scroll wheel play increases", "diagnostic": "Friction wearing down the rubber coating of the inner wheel dial."},
+            {"stage_or_time": "Month 3", "issue": "Battery capacity indicator drops", "diagnostic": "RGB lighting active at maximum brightness drains power 3x faster."}
+        ],
+        "requests": [
+            {"feature": "Metal Scroll Wheel Upgrade", "count": 19, "sample_quote": "Upgrade the cheap plastic scroll wheel to a premium metal design."},
+            {"feature": "Interchangeable Thumb Rest Wings", "count": 12, "sample_quote": "Offer wings for different hand sizes or let me remove it completely."}
+        ],
+        "clusters": [
+            {"category": ClusterCategory.QUALITY, "issue": "Scroll wheel rattle", "frequency": 16},
+            {"category": ClusterCategory.UX, "issue": "Confusing button mapping software", "frequency": 14},
+            {"category": ClusterCategory.DELIVERY, "issue": "Box corners bent in transit", "frequency": 5},
+            {"category": ClusterCategory.SERVICE, "issue": "Support replaced wobbly unit quickly", "frequency": 12},
+            {"category": ClusterCategory.PRICING, "issue": "Excellent value for custom buttons", "frequency": 18}
+        ],
+        "fixes": [
+            "Stiffen the scroll wheel mounting brackets to remove side play.",
+            "Fix software sync crash bugs on modern macOS updates."
+        ],
+        "improvements": [
+            "Bundle a set of replacement PTFE mouse feet gliders.",
+            "Stiffen the tactile click activation on side buttons."
+        ],
+        "roadmap": [
+            "Develop a lightweight honeycomb shell gaming edition.",
+            "Integrate dual-channel Bluetooth multi-device selector toggle."
+        ],
+        "gaps": [
+            "Our battery life exceeds competitors by 20%, but we lack infinite scrolling capabilities.",
+            "Competitors support higher polling rates which are preferred by competitive e-sports players."
+        ]
+    },
+    "phone": {
+        "summary": "Reviewers of {product_name} are highly impressed with its vibrant OLED display, snappy performance, and excellent camera system. The software user interface is smooth and fluid. However, battery life is average and charging speeds are sluggish without purchasing a separate fast-charging block.",
+        "pros": [
+            {"term": "Stunning OLED Display", "count": 28, "percentage": 88.0},
+            {"term": "Snappy UI Performance", "count": 22, "percentage": 78.0},
+            {"term": "Vibrant Camera Photos", "count": 18, "percentage": 68.0},
+            {"term": "Premium Sleek Build", "count": 12, "percentage": 48.0}
+        ],
+        "cons": [
+            {"term": "Average Battery Runtime", "count": 18, "percentage": 52.0},
+            {"term": "Sluggish Charging Speeds", "count": 12, "percentage": 38.0},
+            {"term": "Bloatware Apps Included", "count": 8, "percentage": 24.0}
+        ],
+        "thematic": [
+            {"category": "Value for Money", "score": 4.4},
+            {"category": "Build Quality", "score": 4.5},
+            {"category": "Ease of Use", "score": 4.2},
+            {"category": "Reliability", "score": 4.1}
+        ],
+        "comparison": "Compared to other flagships, the {product_name} offers a superior display for the price, though it falls behind in telephoto camera zoom and fast charging capabilities.",
+        "highlights": [
+            {"category": "Display", "quote": "The 120Hz display makes browsing and animations feel incredibly smooth.", "sentiment": "Positive"},
+            {"category": "Camera", "quote": "Night photos are clear and sharp, catching a lot of detail.", "sentiment": "Positive"},
+            {"category": "Battery", "quote": "Barely makes it to the end of the day if I watch videos or play games.", "sentiment": "Negative"}
+        ],
+        "complaints": [
+            {"issue": "Fast Charger Omitted from Box", "impact_score": 7, "volume": 18, "severity": SeverityEnum.MEDIUM, "root_cause": "Environmental packaging decisions omitting charger accessory."},
+            {"issue": "Battery Drain in Standby Mode", "impact_score": 6, "volume": 12, "severity": SeverityEnum.MEDIUM, "root_cause": "Background system processes failing to enter low-power sleep states."},
+            {"issue": "Thermal Throttle during Video Calls", "impact_score": 8, "volume": 9, "severity": SeverityEnum.HIGH, "root_cause": "Passive thermal dissipation limit in compact metal frame."}
+        ],
+        "timeline": [
+            {"stage_or_time": "Day 1 (Setup)", "issue": "Stunning screen setup", "diagnostic": "Initial data transfer took 30 minutes, display colors look phenomenal."},
+            {"stage_or_time": "Week 2", "issue": "Phone gets warm during tasks", "diagnostic": "High processor usage raises phone core temperature to 42C."},
+            {"stage_or_time": "Month 3", "issue": "Standby drain increases", "diagnostic": "System cache logs block deep sleep, draining 8% charge overnight."}
+        ],
+        "requests": [
+            {"feature": "Include 30W Fast Charger Block", "count": 22, "sample_quote": "Please just put a fast charger block in the box so I don't have to buy one."},
+            {"feature": "Expand MicroSD Storage Support", "count": 14, "sample_quote": "Add a microSD card slot so I can expand storage for my photos."}
+        ],
+        "clusters": [
+            {"category": ClusterCategory.QUALITY, "issue": "Screen scratches easily", "frequency": 11},
+            {"category": ClusterCategory.UX, "issue": "Standby battery drain bugs", "frequency": 14},
+            {"category": ClusterCategory.DELIVERY, "issue": "Arrived safely in bubble pack", "frequency": 5},
+            {"category": ClusterCategory.SERVICE, "issue": "Helpful support for OS updates", "frequency": 15},
+            {"category": ClusterCategory.PRICING, "issue": "Excellent specs for the price tag", "frequency": 20}
+        ],
+        "fixes": [
+            "Optimize background OS power management to resolve standby drain.",
+            "Adjust dynamic thermal throttling profiles to prevent camera overheat."
+        ],
+        "improvements": [
+            "Apply a harder scratch-resistant glass coating to screen glass.",
+            "Increase maximum supported charging rate to 45W speed."
+        ],
+        "roadmap": [
+            "Develop under-display selfie camera sensors for a notchless screen.",
+            "Integrate direct satellite connectivity features for emergency messaging."
+        ],
+        "gaps": [
+            "Our display refresh speed matches top brands, but we lack wireless charging pads.",
+            "Competitors support reverse wireless charging which our phone lacks."
+        ]
+    },
     "generic": {
         "summary": "Reviewers generally rate the {product_name} highly for its usability and solid build quality. The design is modern and fits well into daily use. However, some users find it difficult to clean and note that the instruction sheet could be clearer.",
         "pros": [
@@ -713,13 +875,60 @@ def has_word_match(text: str, keywords: list) -> bool:
     pattern = r"\b(" + "|".join(re.escape(k) for k in keywords) + r")\b"
     return bool(re.search(pattern, text, re.IGNORECASE))
 
+def detect_category_from_text(text: str) -> str:
+    """Classifies a given lowercase text string into a product category based on keywords."""
+    # 1. Compound accessories / stands / risers (categorized as home_office to prevent false overlaps)
+    if has_word_match(text, [
+        "monitor stand", "monitor mount", "monitor arm", "monitor riser", "monitor bracket",
+        "tv stand", "tv mount", "tv bracket",
+        "keyboard tray", "keyboard stand", "keyboard riser",
+        "mic stand", "microphone stand", "speaker stand",
+        "laptop stand", "laptop riser", "phone stand", "phone holder",
+        "tablet stand", "tablet holder", "desk organizer", "desk organiser"
+    ]):
+        return "home_office"
+        
+    # 2. Wearables
+    if has_word_match(text, ["watch", "band", "fitbit", "wearable", "tracker", "smartwatch", "fitness"]):
+        return "wearable"
+    # 3. Kitchen / Brewers
+    if has_word_match(text, ["coffee", "brewer", "kettle", "maker", "mug", "cooker", "blender", "pot", "grinder", "cook", "toaster", "oven", "airfryer", "juicer"]):
+        return "kitchen"
+    # 4. Shoes / Clothing / Apparel
+    if has_word_match(text, ["shoe", "boot", "sneaker", "running", "shirt", "pants", "jacket", "coat", "hoodie", "sock", "apparel", "clothing", "jeans", "tshirt", "t-shirt", "dress"]):
+        return "apparel"
+    # 5. Phones & Mobile Devices
+    if has_word_match(text, ["phone", "smartphone", "iphone", "android", "galaxy", "pixel", "oneplus", "cellular", "mobile"]):
+        return "phone"
+    # 6. Computer Mice
+    if has_word_match(text, ["mouse", "mice", "trackpad", "scroll", "pointer", "dpi", "sensor", "grip", "clicks"]):
+        return "mouse"
+    # 7. Keyboards & Input Devices (Excluding Mouse)
+    if has_word_match(text, ["keyboard", "keypad", "typing", "keeb", "keys", "clicky", "keycaps"]):
+        return "keyboard"
+    # 8. Audio, Speakers & Microphones
+    if has_word_match(text, ["mic", "microphone", "headphone", "headset", "earphone", "earbud", "speaker", "audio", "sound", "voice", "music", "earphones", "earbuds", "headphones", "headsets", "microphones", "speakers", "jbl", "soundbar", "soundbars"]):
+        return "audio"
+    # 9. Monitors & Display Screens
+    if has_word_match(text, ["monitor", "screen", "display", "tv", "television", "displayport", "hdmi", "projector"]):
+        return "display"
+    # 10. Books & Novels
+    if has_word_match(text, ["book", "read", "manifest", "novel", "bestseller", "paperback", "hardcover", "author", "pages", "reading", "novels", "books", "hardback", "paperbacks", "literature", "fiction", "biography"]):
+        return "book"
+    # 11. Home / Office / Desk Organizer / Furniture / Lamp
+    if has_word_match(text, ["organizer", "organiser", "desk", "chair", "table", "shelf", "furniture", "storage", "rack", "stand", "holder", "riser", "lamp", "light", "decor", "cabinet", "drawer", "sofa", "bed", "stool"]):
+        return "home_office"
+        
+    return ""
+
 def get_mock_reviews_for_url(product_name: str, url: str) -> list:
     url_name = extract_product_name_from_url(url)
     display_name = url_name if url_name else product_name
     combined = (display_name + " " + url).lower()
     
-    # 1. Wearables
-    if has_word_match(combined, ["watch", "band", "fitbit", "wearable", "tracker", "smartwatch"]):
+    cat = detect_category_from_text(combined)
+    
+    if cat == "wearable":
         return [
             f"The smartwatch purchased from {url} works perfectly. Setup was straightforward.",
             "Beautiful display and design, but the battery drains twice as fast as my old watch.",
@@ -727,8 +936,7 @@ def get_mock_reviews_for_url(product_name: str, url: str) -> list:
             "The companion app keeps dropping Bluetooth pairing. Hope they fix it in a firmware update.",
             "Great tracking quality. Definitely recommend it for anyone looking to monitor steps.",
         ]
-    # 2. Kitchen / Brewers
-    elif has_word_match(combined, ["coffee", "brewer", "kettle", "maker", "mug", "cooker", "blender", "pot", "grinder", "cook"]):
+    elif cat == "kitchen":
         return [
             f"The brewer purchased from {url} works perfectly. Heating is extremely fast.",
             "Beautiful stainless finish, but the steaming valve is much louder than my old cooker.",
@@ -736,8 +944,7 @@ def get_mock_reviews_for_url(product_name: str, url: str) -> list:
             "Hard to clean coffee grounds/food residue from the inner crevices, need a custom brush.",
             "Great beverage/cooking quality. Definitely recommend it for anyone looking to save time in the morning.",
         ]
-    # 3. Shoes / Clothing / Apparel
-    elif has_word_match(combined, ["shoe", "boot", "sneaker", "running", "shirt", "pants", "jacket", "coat", "hoodie", "sock", "apparel", "clothing"]):
+    elif cat == "apparel":
         return [
             f"The items purchased from {url} feel extremely comfortable. Walking/wearing comfort is top tier.",
             "Beautiful styling, but the sizing runs small and tight around the front seams.",
@@ -745,17 +952,23 @@ def get_mock_reviews_for_url(product_name: str, url: str) -> list:
             "The stitching around the collar is thin and began to run after my second use.",
             "Great fabric quality and breathability. Definitely recommend it for running/wearing.",
         ]
-    # 4. Monitors & Display Screens
-    elif has_word_match(combined, ["monitor", "screen", "display", "tv", "television", "displayport", "hdmi"]):
+    elif cat == "phone":
         return [
-            f"The monitor purchased from {url} works beautifully. The colors are extremely vibrant and the contrast is excellent.",
-            "Love the high refresh rate, but the display panel has a bit of backlight bleed in the corners.",
-            "Excellent price point for a 4K display. The stand feels a bit wobbly when typing.",
-            "The built-in speakers sound tinny, but the screen panel quality makes up for it.",
-            "Great color accuracy for editing. Definitely recommend it for gaming or design work.",
+            f"The phone purchased from {url} works beautifully. The OLED screen is stunningly bright and colorful.",
+            "Camera captures excellent photos, but the battery drains quickly under heavy usage.",
+            "Excellent price point for a modern smartphone. Performance feels snappy. Shipping took 4 days.",
+            "The charging speed is slower than expected without a custom adapter.",
+            "Great overall build quality. Definitely recommend it for anyone upgrading their mobile device.",
         ]
-    # 5. Keyboards & Input Devices
-    elif has_word_match(combined, ["keyboard", "mouse", "trackpad", "keypad", "typing", "keeb"]):
+    elif cat == "mouse":
+        return [
+            f"The mouse purchased from {url} works beautifully. The clicks feel tactile and responsive.",
+            "Love the ergonomic shape and grip, but the scroll wheel has a bit of rattle.",
+            "Excellent price point for a wireless mouse. High precision sensor. Shipping took 4 days.",
+            "The side buttons are slightly hard to reach for small hands.",
+            "Great wireless tracking performance. Definitely recommend it for gaming or daily productivity.",
+        ]
+    elif cat == "keyboard":
         return [
             f"The keyboard purchased from {url} works beautifully. The keystrokes feel tactile and responsive.",
             "Love the mechanical switch feel, but the spacebar has a bit of rattle.",
@@ -763,26 +976,23 @@ def get_mock_reviews_for_url(product_name: str, url: str) -> list:
             "The keycap legends are slightly thin and the backlight does not shine through clearly.",
             "Great wireless typing performance. Definitely recommend it for anyone writing or gaming.",
         ]
-    # 6. Audio & Microphones
-    elif has_word_match(combined, ["mic", "microphone", "headphone", "headset", "earphone", "earbud", "speaker", "audio", "sound", "voice"]):
+    elif cat == "audio":
         return [
             f"The microphone purchased from {url} works perfectly. The vocal clarity is crisp and clean.",
             "Excellent sound pickup, but the gain knob turns too easily and gets bumped.",
             "Excellent price point for audio gear. Metal body feels premium. Shipping took 4 days.",
-            "The desk stand transfers vibration noise whenever I type on my desk.",
+            "The desk stand transfers vibration noise whenever I touch my desk.",
             "Great voice recording quality. Definitely recommend it for podcasting or meetings.",
         ]
-    # 7. Home / Office / Desk Organizer / Furniture
-    elif has_word_match(combined, ["organizer", "organiser", "desk", "chair", "table", "shelf", "furniture", "storage", "rack", "stand", "holder", "riser"]):
+    elif cat == "display":
         return [
-            f"The organizer purchased from {url} helps declutter my desk perfectly. Setup was clean.",
-            "Beautiful wood finish, but the assembly guide is confusing with unlabeled screws.",
-            "Excellent price point for home storage. Metal frame feels premium. Shipping took 4 days.",
-            "The drawer sliders have some friction when loaded with books and accessories.",
-            "Great organization capacity and sturdiness. Definitely recommend it for a cleaner workspace.",
+            f"The monitor purchased from {url} works beautifully. The colors are extremely vibrant and the contrast is excellent.",
+            "Love the high refresh rate, but the display panel has a bit of backlight bleed in the corners.",
+            "Excellent price point for a 4K display. The stand feels wobbly.",
+            "The built-in speakers sound tinny, but the screen panel quality makes up for it.",
+            "Great color accuracy for editing. Definitely recommend it for gaming or design work.",
         ]
-    # 8. Books & Novels
-    elif has_word_match(combined, ["book", "read", "manifest", "novel", "bestseller", "paperback", "hardcover", "author", "pages"]):
+    elif cat == "book":
         return [
             f"The book purchased from {url} was an absolute joy to read. Very inspiring advice.",
             "The concepts are interesting, but the middle chapters feel a bit repetitive and slow.",
@@ -790,7 +1000,14 @@ def get_mock_reviews_for_url(product_name: str, url: str) -> list:
             "The text font size is small, making it difficult to read in dim light.",
             "Great content quality and structural worksheets. Definitely recommend it to others.",
         ]
-    # 9. Default / Generic Fallback
+    elif cat == "home_office":
+        return [
+            f"The organizer purchased from {url} helps declutter my desk perfectly. Setup was clean.",
+            "Beautiful wood finish, but the assembly guide is confusing with unlabeled screws.",
+            "Excellent price point for home storage. Metal frame feels premium. Shipping took 4 days.",
+            "The drawer sliders have some friction when loaded with books and accessories.",
+            "Great organization capacity and sturdiness. Definitely recommend it for a cleaner workspace.",
+        ]
     else:
         return [
             f"The items purchased from {url} work well for daily use. Extremely practical build.",
@@ -802,34 +1019,17 @@ def get_mock_reviews_for_url(product_name: str, url: str) -> list:
 
 def get_mock_data_for_product(product_name: str, reviews_text: str = "") -> dict:
     """Returns product category-specific structured mock datasets depending on name or URL keywords."""
-    combined = (product_name + " " + reviews_text).lower()
+    name_lower = product_name.lower()
+    reviews_lower = reviews_text.lower()
     
-    # 1. Wearables
-    if has_word_match(combined, ["watch", "band", "fitbit", "wearable", "tracker", "smartwatch"]):
-        cat = "wearable"
-    # 2. Kitchen / Brewers
-    elif has_word_match(combined, ["coffee", "brewer", "kettle", "maker", "mug", "cooker", "blender", "pot", "grinder", "cook"]):
-        cat = "kitchen"
-    # 3. Shoes / Clothing / Apparel
-    elif has_word_match(combined, ["shoe", "boot", "sneaker", "running", "shirt", "pants", "jacket", "coat", "hoodie", "sock", "apparel", "clothing"]):
-        cat = "apparel"
-    # 4. Monitors & Display Screens
-    elif has_word_match(combined, ["monitor", "screen", "display", "tv", "television", "displayport", "hdmi"]):
-        cat = "display"
-    # 5. Keyboards & Input Devices
-    elif has_word_match(combined, ["keyboard", "mouse", "trackpad", "keypad", "typing", "keeb"]):
-        cat = "keyboard"
-    # 6. Audio & Microphones
-    elif has_word_match(combined, ["mic", "microphone", "headphone", "headset", "earphone", "earbud", "speaker", "audio", "sound", "voice"]):
-        cat = "audio"
-    # 7. Home / Office / Desk Organizer / Furniture
-    elif has_word_match(combined, ["organizer", "organiser", "desk", "chair", "table", "shelf", "furniture", "storage", "rack", "stand", "holder", "riser"]):
-        cat = "home_office"
-    # 8. Books & Novels
-    elif has_word_match(combined, ["book", "read", "manifest", "novel", "bestseller", "paperback", "hardcover", "author", "pages"]):
-        cat = "book"
-    # 9. Generic Fallback
-    else:
+    # 1. Primary check: check product_name (highly accurate clean title)
+    cat = detect_category_from_text(name_lower)
+    
+    # 2. Fallback check: check reviews text (if name didn't match anything)
+    if not cat and reviews_lower:
+        cat = detect_category_from_text(reviews_lower)
+        
+    if not cat:
         cat = "generic"
         
     # Deep copy the template dict to customize it

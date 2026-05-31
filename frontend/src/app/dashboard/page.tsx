@@ -110,6 +110,7 @@ function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const datasetId = searchParams.get('id');
+  const t = searchParams.get('t');
 
   const [mode, setMode] = useState<'buyer' | 'seller'>('buyer');
   const [data, setData] = useState<AnalysisData | null>(null);
@@ -128,7 +129,7 @@ function DashboardContent() {
     } else {
       router.push('/');
     }
-  }, [datasetId]);
+  }, [datasetId, t]);
 
   const fetchAnalysis = async (id: string) => {
     setIsLoading(true);

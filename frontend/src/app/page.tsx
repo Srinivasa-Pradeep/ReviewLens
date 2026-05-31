@@ -14,7 +14,7 @@ interface Dataset {
 
 export default function Home() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'text' | 'csv' | 'url'>('text');
+  const [activeTab, setActiveTab] = useState<'url' | 'text' | 'csv'>('url');
   const [datasetName, setDatasetName] = useState('');
   const [pastedText, setPastedText] = useState('');
   const [productUrl, setProductUrl] = useState('');
@@ -160,7 +160,7 @@ export default function Home() {
       const result = await response.json();
       
       // Navigate to dashboard
-      router.push(`/dashboard?id=${result.dataset_id}`);
+      router.push(`/dashboard?id=${result.dataset_id}&t=${Date.now()}`);
     } catch (err: any) {
       setErrorMsg(err.message || "Failed to contact analysis server. Ensure python backend is running.");
       setIsLoading(false);
@@ -238,6 +238,18 @@ export default function Home() {
             <div className="flex border-b border-[var(--border-color)] mb-6">
               <button
                 type="button"
+                onClick={() => setActiveTab('url')}
+                className={`flex-1 pb-3 text-sm font-medium border-b-2 transition-all flex items-center justify-center space-x-2 ${
+                  activeTab === 'url'
+                    ? 'border-[var(--accent)] text-[var(--foreground)]'
+                    : 'border-transparent text-[var(--accent-muted)] hover:text-[var(--foreground)]'
+                }`}
+              >
+                <LinkIcon className="w-4 h-4" />
+                <span>Product URL</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => setActiveTab('text')}
                 className={`flex-1 pb-3 text-sm font-medium border-b-2 transition-all flex items-center justify-center space-x-2 ${
                   activeTab === 'text'
@@ -259,18 +271,6 @@ export default function Home() {
               >
                 <Upload className="w-4 h-4" />
                 <span>Upload CSV</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('url')}
-                className={`flex-1 pb-3 text-sm font-medium border-b-2 transition-all flex items-center justify-center space-x-2 ${
-                  activeTab === 'url'
-                    ? 'border-[var(--accent)] text-[var(--foreground)]'
-                    : 'border-transparent text-[var(--accent-muted)] hover:text-[var(--foreground)]'
-                }`}
-              >
-                <LinkIcon className="w-4 h-4" />
-                <span>Product URL</span>
               </button>
             </div>
 
@@ -472,7 +472,7 @@ export default function Home() {
                 {history.map((item) => (
                   <div
                     key={item.id}
-                    onClick={() => router.push(`/dashboard?id=${item.id}`)}
+                    onClick={() => router.push(`/dashboard?id=${item.id}&t=${Date.now()}`)}
                     className="group w-full p-3 text-left rounded-lg bg-[var(--surface)] border border-[var(--border-color)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] transition-all flex items-center justify-between cursor-pointer"
                   >
                     <div className="flex items-center space-x-3 min-w-0">
