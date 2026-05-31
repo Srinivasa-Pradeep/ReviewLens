@@ -2,6 +2,8 @@
 
 > Turn thousands of product reviews into insights in seconds.
 
+**Live Demo**: [frontend-two-xi-fq8vsng9ss.vercel.app](https://frontend-two-xi-fq8vsng9ss.vercel.app)
+
 ReviewLens is an AI-powered review analytics platform designed for both B2C Consumers (Buyers) and E-commerce Businesses (Sellers). Built with a premium, high-end Apple-style dark glassmorphism aesthetic, it parses raw review texts, crawls URL targets, or processes CSV datasets to yield immediate summaries, buying verdicts, complaint priority lists, and feature roadmap recommendations.
 
 The project is structured as a **Unified Serverless Next.js Web Application**, running entirely on Next.js serverless routes and using the browser's `localStorage` for fast, lightweight data persistence.
