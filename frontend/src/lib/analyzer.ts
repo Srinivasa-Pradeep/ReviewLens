@@ -765,6 +765,7 @@ export async function extractProductNameFromUrl(url: string): Promise<string> {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
       },
+      cache: 'no-store',
       signal: AbortSignal.timeout(4000)
     });
     if (res.ok) {

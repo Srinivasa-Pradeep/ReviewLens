@@ -6,6 +6,8 @@ import {
   generateMockSellerInsights 
 } from '@/lib/analyzer';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const { url } = await request.json();
