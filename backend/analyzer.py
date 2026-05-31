@@ -140,8 +140,26 @@ def get_mock_reviews_for_url(product_name: str, url: str) -> list:
             "The stitching around the collar is thin and began to run after my second use.",
             "Great fabric quality and breathability. Definitely recommend it for running/wearing.",
         ]
-    # 4. Home / Office / Desk Organizer / Furniture
-    elif any(k in combined for k in ["organizer", "organiser", "desk", "chair", "table", "shelf", "office", "furniture", "home", "storage", "rack", "stand", "holder", "box", "case"]):
+    # 4. Keyboards & Input Devices
+    elif any(k in combined for k in ["keyboard", "mouse", "trackpad", "keypad", "typing", "keeb"]):
+        return [
+            f"The keyboard purchased from {url} works beautifully. The keystrokes feel tactile and responsive.",
+            "Love the mechanical switch feel, but the spacebar has a bit of rattle.",
+            "Excellent price point for a wireless keyboard. RGB lighting looks premium. Shipping took 4 days.",
+            "The keycap legends are slightly thin and the backlight does not shine through clearly.",
+            "Great wireless typing performance. Definitely recommend it for anyone writing or gaming.",
+        ]
+    # 5. Audio & Microphones
+    elif any(k in combined for k in ["mic", "microphone", "headphone", "headset", "earphone", "earbud", "speaker", "audio", "sound", "voice"]):
+        return [
+            f"The microphone purchased from {url} works perfectly. The vocal clarity is crisp and clean.",
+            "Excellent sound pickup, but the gain knob turns too easily and gets bumped.",
+            "Excellent price point for audio gear. Metal body feels premium. Shipping took 4 days.",
+            "The desk stand transfers vibration noise whenever I type on my desk.",
+            "Great voice recording quality. Definitely recommend it for podcasting or meetings.",
+        ]
+    # 6. Home / Office / Desk Organizer / Furniture
+    elif any(k in combined for k in ["organizer", "organiser", "desk", "chair", "table", "shelf", "furniture", "storage", "rack", "stand", "holder", "riser"]):
         return [
             f"The organizer purchased from {url} helps declutter my desk perfectly. Setup was clean.",
             "Beautiful wood finish, but the assembly guide is confusing with unlabeled screws.",
@@ -149,7 +167,7 @@ def get_mock_reviews_for_url(product_name: str, url: str) -> list:
             "The drawer sliders have some friction when loaded with books and accessories.",
             "Great organization capacity and sturdiness. Definitely recommend it for a cleaner workspace.",
         ]
-    # 5. Default
+    # 7. Default
     else:
         return [
             f"The items purchased from {url} work perfectly. Onboarding was straightforward.",
@@ -361,8 +379,140 @@ def get_mock_data_for_product(product_name: str, reviews_text: str = "") -> dict
             ]
         }
 
-    # Category 4: Home / Office / Desk Organizer / Furniture
-    elif any(k in combined for k in ["organizer", "organiser", "desk", "chair", "table", "shelf", "office", "furniture", "home", "storage", "rack", "stand", "holder", "box", "case"]):
+    # Category 4: Keyboards & Input Devices
+    elif any(k in combined for k in ["keyboard", "mouse", "trackpad", "keypad", "typing", "keeb"]):
+        return {
+            "summary": f"Reviewers of {product_name} are highly satisfied with its typing comfort, tactile switch feedback, and sleek layout. The wireless connectivity is responsive with low latency. However, some complain about key stabilizer rattle on the spacebar and the lack of shine-through keycaps.",
+            "pros": [
+                {"term": "Tactile Switch Feedback", "count": 25, "percentage": 85.0},
+                {"term": "Responsive Wireless Latency", "count": 20, "percentage": 75.0},
+                {"term": "Sleek Compact Layout", "count": 15, "percentage": 60.0},
+                {"term": "Long Rechargeable Battery", "count": 11, "percentage": 45.0}
+            ],
+            "cons": [
+                {"term": "Spacebar Stabilizer Rattle", "count": 16, "percentage": 50.0},
+                {"term": "Non-Shine-Through Keycaps", "count": 11, "percentage": 35.0},
+                {"term": "Confusing Custom Software", "count": 7, "percentage": 22.0}
+            ],
+            "thematic": [
+                {"category": "Value for Money", "score": 4.2},
+                {"category": "Build Quality", "score": 4.1},
+                {"category": "Ease of Use", "score": 4.5},
+                {"category": "Reliability", "score": 4.3}
+            ],
+            "comparison": f"Compared to standard membrane keyboards, the {product_name} offers a far superior mechanical typing experience, though the key stabilizers feel less premium than custom-built alternatives.",
+            "highlights": [
+                {"category": "Typing", "quote": "The key switches feel extremely smooth and satisfying for long coding sessions.", "sentiment": "Positive"},
+                {"category": "Stabilizers", "quote": "The larger keys like Enter and Spacebar rattle loudly and feel loose.", "sentiment": "Negative"},
+                {"category": "Lighting", "quote": "RGB effects are cool, but the keys are hard to read in the dark.", "sentiment": "Neutral"}
+            ],
+            "complaints": [
+                {"issue": "Spacebar & Enter Stabilizer Rattle", "impact_score": 6, "volume": 16, "severity": SeverityEnum.MEDIUM, "root_cause": "Dry stabilizer stems and loose wire clips in the plate mount."},
+                {"issue": "Backlight Blocked by Keycap Material", "impact_score": 5, "volume": 12, "severity": SeverityEnum.LOW, "root_cause": "Opaque ABS double-shot injection without clear legends."},
+                {"issue": "Customization Software Crashes", "impact_score": 7, "volume": 9, "severity": SeverityEnum.HIGH, "root_cause": "Outdated desktop companion app driver compatibilities with macOS."}
+            ],
+            "timeline": [
+                {"stage_or_time": "Day 1 (Setup)", "issue": "Quick pairing connection", "diagnostic": "Quick pairing over Bluetooth and 2.4GHz receiver. Typing felt immediately responsive."},
+                {"stage_or_time": "Week 2", "issue": "Double typing key chattering", "diagnostic": "Noticed keys chatter or double-type occasionally when battery falls below 10%."},
+                {"stage_or_time": "Month 3", "issue": "Keycap texture shines out", "diagnostic": "Matte texture on keycaps begins to shine from finger grease."}
+            ],
+            "requests": [
+                {"feature": "Include Lubricated Screw-in Stabilizers", "count": 18, "sample_quote": "Please lube the stabilizers in the factory to stop the annoying rattle."},
+                {"feature": "PBT Shine-Through Keycaps Pack", "count": 11, "sample_quote": "Wish the keycaps let the RGB light pass through so I can type in the dark."}
+            ],
+            "clusters": [
+                {"category": ClusterCategory.QUALITY, "issue": "Key chatter on double keystrokes", "frequency": 9},
+                {"category": ClusterCategory.UX, "issue": "Software profile syncing errors", "frequency": 15},
+                {"category": ClusterCategory.DELIVERY, "issue": "Keycap puller tool missing from box", "frequency": 4},
+                {"category": ClusterCategory.SERVICE, "issue": "Responsive customer support sent replacement switches", "frequency": 12},
+                {"category": ClusterCategory.PRICING, "issue": "Affordable hot-swappable board", "frequency": 18}
+            ],
+            "fixes": [
+                "Pre-lubricate stabilizer housings and wires during factory assembly.",
+                "Fix memory leaks in the macOS driver version of customization software."
+            ],
+            "improvements": [
+                "Upgrade stock keycaps to high-durability textured PBT material.",
+                "Include a dedicated keycap and switch puller tool in the retail pack."
+            ],
+            "roadmap": [
+                "Develop a custom web-based configurator (VIAL/QMK) to eliminate native app dependencies.",
+                "Offer quiet linear silent switch variants for office environments."
+            ],
+            "gaps": [
+                "Our hot-swappability allows users to swap switches easily, which matches enthusiast boards.",
+                "We lack standard gasket mounting, which makes the typing feel stiffer than premium custom keyboards."
+            ]
+        }
+
+    # Category 5: Audio & Microphones
+    elif any(k in combined for k in ["mic", "microphone", "headphone", "headset", "earphone", "earbud", "speaker", "audio", "sound", "voice"]):
+        return {
+            "summary": f"Reviewers praise the {product_name} for its excellent vocal clarity, robust metal construction, and plug-and-play simplicity. It captures audio with minimal self-noise. However, users report that the desk stand picks up desk vibrations easily and the gain control dial is too loose.",
+            "pros": [
+                {"term": "Crisp Vocal Clarity", "count": 28, "percentage": 88.0},
+                {"term": "Plug-and-Play USB Setup", "count": 22, "percentage": 78.0},
+                {"term": "Solid Metal Construction", "count": 18, "percentage": 65.0},
+                {"term": "Low Internal Noise Floor", "count": 12, "percentage": 50.0}
+            ],
+            "cons": [
+                {"term": "Transfers Desk Vibrations", "count": 18, "percentage": 55.0},
+                {"term": "Loose Gain Dial Control", "count": 12, "percentage": 38.0},
+                {"term": "Sensitive to Pop Plosives", "count": 8, "percentage": 28.0}
+            ],
+            "thematic": [
+                {"category": "Value for Money", "score": 4.5},
+                {"category": "Build Quality", "score": 4.4},
+                {"category": "Ease of Use", "score": 4.7},
+                {"category": "Reliability", "score": 4.2}
+            ],
+            "comparison": f"Compared to built-in laptop microphones, the {product_name} provides professional broadcast-quality sound, though it requires a shock mount to match studio setups.",
+            "highlights": [
+                {"category": "Sound", "quote": "Vocals sound professional and rich. Great for voiceovers and Zoom calls.", "sentiment": "Positive"},
+                {"category": "Mounting", "quote": "The heavy stand is nice, but it transmits every keyboard tap directly into the recording.", "sentiment": "Negative"},
+                {"category": "Controls", "quote": "Mute button is handy, but I wish it didn't make a loud click sound when pressed.", "sentiment": "Neutral"}
+            ],
+            "complaints": [
+                {"issue": "Vibration & Typing Noise Ingestion", "impact_score": 7, "volume": 18, "severity": SeverityEnum.MEDIUM, "root_cause": "Rigid metal connection without rubber dampening in the desk stand."},
+                {"issue": "Oversensitive Gain Control Dial", "impact_score": 5, "volume": 11, "severity": SeverityEnum.LOW, "root_cause": "Lack of detents or physical resistance in the potentiometer."},
+                {"issue": "Loud Physical Click on Mute Button", "impact_score": 6, "volume": 8, "severity": SeverityEnum.MEDIUM, "root_cause": "Tactile dome switch used instead of a silent capacitive sensor."}
+            ],
+            "timeline": [
+                {"stage_or_time": "Day 1 (Setup)", "issue": "Instant USB detection", "diagnostic": "Plugged it in and it was instantly recognized. Volume output was excellent."},
+                {"stage_or_time": "Week 2", "issue": "Clipping on plosive letters", "diagnostic": "Bought a foam windscreen because my 'P' and 'B' sounds were clipping."},
+                {"stage_or_time": "Month 3", "issue": "Slightly loose USB port", "diagnostic": "The USB connection port on the mic base feels slightly loose."}
+            ],
+            "requests": [
+                {"feature": "Include Elastic Band Shock Mount", "count": 22, "sample_quote": "Please bundle a shock mount to stop the thumping noise from typing."},
+                {"feature": "Add Silent Mute Touch Sensor", "count": 14, "sample_quote": "Replace the clicky button with a touch pad so I can mute silently during calls."}
+            ],
+            "clusters": [
+                {"category": ClusterCategory.QUALITY, "issue": "USB connection drops", "frequency": 8},
+                {"category": ClusterCategory.UX, "issue": "Gain dial bumps easily", "frequency": 12},
+                {"category": ClusterCategory.DELIVERY, "issue": "Box arrived slightly squished", "frequency": 4},
+                {"category": ClusterCategory.SERVICE, "issue": "Support sent replacement cable", "frequency": 10},
+                {"category": ClusterCategory.PRICING, "issue": "Incredible value compared to brand name mics", "frequency": 22}
+            ],
+            "fixes": [
+                "Add rubber vibration isolation rings to the mounting threads.",
+                "Replace physical click mute button with a silent capacitive touch sensor."
+            ],
+            "improvements": [
+                "Stiffen the gain dial rotation resistance to avoid accidental changes.",
+                "Provide a complimentary pop filter cover in the packaging."
+            ],
+            "roadmap": [
+                "Release a dual XLR/USB model to target both beginner and professional setups.",
+                "Integrate an internal analog limiter to prevent audio clipping on loud sounds."
+            ],
+            "gaps": [
+                "Our audio resolution is 24-bit/96kHz which is top-tier, but we don't have headphone mixing software.",
+                "Competitors bundle full virtual soundboards, which our companion app currently lacks."
+            ]
+        }
+
+    # Category 6: Home / Office / Desk Organizer / Furniture
+    elif any(k in combined for k in ["organizer", "organiser", "desk", "chair", "table", "shelf", "furniture", "storage", "rack", "stand", "holder", "riser"]):
         return {
             "summary": f"Reviewers of {product_name} are extremely pleased with its organizational capacity and sleek aesthetic. It declutters work spaces effectively and the metal/wood parts feel sturdy. However, the assembly instructions can be hard to follow, and the drawer tracks feel slightly loose over time.",
             "pros": [
