@@ -41,48 +41,32 @@ export default function Home() {
     fetchHistory();
   }, []);
 
-  const fetchHistory = async () => {
+  const fetchHistory = () => {
     try {
-      const res = await fetch('http://localhost:8000/api/datasets', {
-        cache: 'no-store',
-        headers: {
-          'Pragma': 'no-cache',
-          'Cache-Control': 'no-cache'
-        }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setHistory(data);
+      const saved = localStorage.getItem('reviewlens_history');
+      if (saved) {
+        setHistory(JSON.parse(saved));
+      } else {
+        setHistory([]);
       }
     } catch (e) {
-      console.error("Could not load history from backend. Make sure FastAPI server is running.", e);
+      console.error("Could not load history from localStorage", e);
     }
   };
 
   const handleMockLogin = (provider: 'google' | 'github') => {
     setIsLoggingIn(provider);
-    setTimeout(async () => {
-      try {
-        const res = await fetch(`http://localhost:8000/api/auth/mock-login/${provider}?email=partner-${provider}@reviewlens.io`);
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data.user);
-          localStorage.setItem('reviewlens_user', JSON.stringify(data.user));
-        }
-      } catch (err) {
-        // Local fallback if backend is down
-        const mockUser = {
-          name: `Premium User (${provider.charAt(0).toUpperCase() + provider.slice(1)})`,
-          email: `partner-${provider}@reviewlens.io`,
-          avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=partner-${provider}`,
-          tier: "Premium Partner",
-          provider
-        };
-        setUser(mockUser);
-        localStorage.setItem('reviewlens_user', JSON.stringify(mockUser));
-      } finally {
-        setIsLoggingIn(null);
-      }
+    setTimeout(() => {
+      const mockUser = {
+        name: `Premium User (${provider.charAt(0).toUpperCase() + provider.slice(1)})`,
+        email: `partner-${provider}@reviewlens.io`,
+        avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=partner-${provider}`,
+        tier: "Premium Partner",
+        provider
+      };
+      setUser(mockUser);
+      localStorage.setItem('reviewlens_user', JSON.stringify(mockUser));
+      setIsLoggingIn(null);
     }, 1200);
   };
 
@@ -106,7 +90,7 @@ export default function Home() {
       formData.append('name', datasetName);
     }
 
-    let endpoint = 'http://localhost:8000/api/ingest/text';
+    let endpoint = '/api/ingest/text';
 
     if (activeTab === 'text') {
       if (!pastedText.trim()) {
@@ -123,7 +107,7 @@ export default function Home() {
         return;
       }
       formData.append('file', csvFile);
-      endpoint = 'http://localhost:8000/api/ingest/csv';
+      endpoint = '/api/ingest/csv';
       setStatusMessage("Parsing CSV column layout and stratifying review ratings...");
     } else {
       if (!productUrl.trim()) {
@@ -131,8 +115,7 @@ export default function Home() {
         setIsLoading(false);
         return;
       }
-      // URL ingest accepts JSON
-      endpoint = 'http://localhost:8000/api/ingest/url';
+      endpoint = '/api/ingest/url';
     }
 
     try {
@@ -152,41 +135,54 @@ export default function Home() {
       }
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Analysis extraction failed.");
+         const errorData = await response.json();
+         throw new Error(errorData.detail || "Analysis extraction failed.");
       }
 
-      setStatusMessage("Running structured schema alignment via OpenAI structured outputs...");
+      setStatusMessage("Running structured schema alignment...");
       const result = await response.json();
       
+      // Create the new dataset history item
+      const newDataset = {
+        id: Date.now(), // Unique ID
+        name: result.name,
+        source_type: result.source_type,
+        buyer_insights: result.buyer_insights,
+        seller_insights: result.seller_insights,
+        created_at: new Date().toISOString()
+      };
+
+      // Save to history in localStorage
+      const savedHistory = JSON.parse(localStorage.getItem('reviewlens_history') || '[]');
+      savedHistory.unshift(newDataset);
+      localStorage.setItem('reviewlens_history', JSON.stringify(savedHistory));
+
       // Navigate to dashboard
-      router.push(`/dashboard?id=${result.dataset_id}&t=${Date.now()}`);
+      router.push(`/dashboard?id=${newDataset.id}&t=${Date.now()}`);
     } catch (err: any) {
-      setErrorMsg(err.message || "Failed to contact analysis server. Ensure python backend is running.");
+      setErrorMsg(err.message || "Failed to contact analysis server.");
       setIsLoading(false);
     }
   };
 
-  const deleteDataset = async (id: number, e: React.MouseEvent) => {
+  const deleteDataset = (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!confirm("Are you sure you want to delete this dataset and its AI insights?")) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/datasets/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        fetchHistory();
-      }
+      const savedHistory = JSON.parse(localStorage.getItem('reviewlens_history') || '[]');
+      const filtered = savedHistory.filter((item: any) => item.id !== id);
+      localStorage.setItem('reviewlens_history', JSON.stringify(filtered));
+      fetchHistory();
     } catch (err) {
       console.error(err);
     }
   };
 
-  const clearAllHistory = async () => {
+  const clearAllHistory = () => {
     if (!confirm("Are you sure you want to clear all analysis history? This will delete all saved product insights and cannot be undone.")) return;
     try {
-      const res = await fetch('http://localhost:8000/api/datasets', { method: 'DELETE' });
-      if (res.ok) {
-        fetchHistory();
-      }
+      localStorage.removeItem('reviewlens_history');
+      fetchHistory();
     } catch (err) {
       console.error("Failed to clear history", err);
     }

@@ -131,21 +131,15 @@ function DashboardContent() {
     }
   }, [datasetId, t]);
 
-  const fetchAnalysis = async (id: string) => {
+  const fetchAnalysis = (id: string) => {
     setIsLoading(true);
     setErrorMsg('');
     try {
-      const res = await fetch(`http://localhost:8000/api/datasets/${id}`, {
-        cache: 'no-store',
-        headers: {
-          'Pragma': 'no-cache',
-          'Cache-Control': 'no-cache'
-        }
-      });
-      if (!res.ok) {
-        throw new Error("Could not find analysis results for this dataset.");
+      const savedHistory = JSON.parse(localStorage.getItem('reviewlens_history') || '[]');
+      const result = savedHistory.find((item: any) => item.id.toString() === id);
+      if (!result) {
+        throw new Error("Could not find analysis results for this dataset in local history.");
       }
-      const result = await res.json();
       setData(result);
     } catch (err: any) {
       setErrorMsg(err.message || "Failed to fetch dataset analysis.");
