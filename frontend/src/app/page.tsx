@@ -25,19 +25,10 @@ export default function Home() {
   const [statusMessage, setStatusMessage] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-  // OAuth Simulated Session
-  const [user, setUser] = useState<any>(null);
-  const [isLoggingIn, setIsLoggingIn] = useState<string | null>(null);
-
   // History
   const [history, setHistory] = useState<Dataset[]>([]);
 
   useEffect(() => {
-    // Check if user session exists in localStorage
-    const savedUser = localStorage.getItem('reviewlens_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
     fetchHistory();
   }, []);
 
@@ -54,31 +45,10 @@ export default function Home() {
     }
   };
 
-  const handleMockLogin = (provider: 'google' | 'github') => {
-    setIsLoggingIn(provider);
-    setTimeout(() => {
-      const mockUser = {
-        name: `Premium User (${provider.charAt(0).toUpperCase() + provider.slice(1)})`,
-        email: `partner-${provider}@reviewlens.io`,
-        avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=partner-${provider}`,
-        tier: "Premium Partner",
-        provider
-      };
-      setUser(mockUser);
-      localStorage.setItem('reviewlens_user', JSON.stringify(mockUser));
-      setIsLoggingIn(null);
-    }, 1200);
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem('reviewlens_user');
-  };
-
   const handleIngest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (activeTab !== 'url' && !datasetName.trim()) {
-      setErrorMsg("Please specify a friendly name for this dataset.");
+      setErrorMsg("Please specify a reference name for this dataset.");
       return;
     }
     setErrorMsg('');
@@ -190,204 +160,222 @@ export default function Home() {
 
   const getSourceIcon = (type: string) => {
     switch (type) {
-      case 'csv': return <Upload className="w-4 h-4 text-emerald-400" />;
-      case 'url': return <LinkIcon className="w-4 h-4 text-blue-400" />;
-      default: return <FileText className="w-4 h-4 text-purple-400" />;
+      case 'csv': return <Upload className="w-3.5 h-3.5 text-neutral-400" />;
+      case 'url': return <LinkIcon className="w-3.5 h-3.5 text-neutral-400" />;
+      default: return <FileText className="w-3.5 h-3.5 text-neutral-400" />;
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 flex flex-col justify-center">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-1 flex flex-col justify-center">
       
       {/* Dynamic Header Section */}
-      <div className="text-center mb-10">
+      <div className="text-center mb-12">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs text-neutral-300 mb-6"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/[0.02] border border-white/[0.05] text-[10px] font-mono tracking-wider uppercase text-neutral-400 mb-6"
         >
-          <Sparkles className="w-3.5 h-3.5 text-neutral-400 animate-pulse" />
-          <span>Smarter Review Analytics Engine</span>
+          <Sparkles className="w-3 h-3 text-neutral-400" />
+          <span>Engine v1.011 // Core Intelligence</span>
         </motion.div>
         
         <motion.h1
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4"
+          transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-4 font-sans"
         >
-          Turn thousands of reviews into <br />
-          <span className="text-gradient-silver">insights in seconds.</span>
+          Insights from reviews. <br />
+          <span className="text-neutral-500">In seconds.</span>
         </motion.h1>
 
         <motion.p
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-xl mx-auto text-sm sm:text-base text-[var(--accent-muted)] font-sans"
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="max-w-md mx-auto text-sm text-neutral-400 font-sans leading-relaxed"
         >
-          Understand the verdict before buying, or discover product complaints and immediate roadmap improvements if you are a seller.
+          Submit a product URL, paste reviews, or upload a CSV file to extract structured consumer verdict and roadmap diagnostics.
         </motion.p>
       </div>
 
-      {/* Main Grid: Upload Panel & OAuth / History Sidepanel */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start max-w-5xl mx-auto w-full">
+      {/* Main Centered Container */}
+      <div className="max-w-xl mx-auto w-full space-y-12">
         
-        {/* Left/Middle Column: Ingestion Card */}
-        <div className="lg:col-span-2 glass-panel p-6 sm:p-8 flex flex-col justify-between h-full min-h-[480px]">
-          <div>
-            <h2 className="text-lg font-semibold mb-6 flex items-center space-x-2 text-slate-900 dark:text-white">
-              <Sparkles className="w-5 h-5 text-[var(--accent-muted)]" />
-              <span>Ingestion Pipeline</span>
-            </h2>
+        {/* Ingestion Card */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="glass-panel bg-[#070707]/60 border border-white/[0.06] p-6 sm:p-8 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.6)]"
+        >
+          <div className="flex items-center space-x-2 mb-6">
+            <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+              [ 01 // Ingestion Pipeline ]
+            </span>
+          </div>
 
-            {/* Source Toggles */}
-            <div className="flex border-b border-[var(--border-color)] mb-6">
-              <button
-                type="button"
-                onClick={() => setActiveTab('url')}
-                className={`flex-1 pb-3 text-sm font-medium border-b-2 transition-all flex items-center justify-center space-x-2 ${
-                  activeTab === 'url'
-                    ? 'border-[var(--accent)] text-[var(--foreground)]'
-                    : 'border-transparent text-[var(--accent-muted)] hover:text-[var(--foreground)]'
-                }`}
+          {/* Source Toggles (Segmented Control style) */}
+          <div className="relative flex p-1 rounded-lg bg-white/[0.02] border border-white/[0.04] mb-8">
+            {/* Sliding background */}
+            <div 
+              className="absolute inset-y-1 transition-all duration-300 ease-out bg-white/[0.04] rounded-md border border-white/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.4)]" 
+              style={{
+                width: 'calc(33.333% - 6px)',
+                left: activeTab === 'url' ? '4px' : activeTab === 'text' ? 'calc(33.333% + 2px)' : 'calc(66.666% + 0px)'
+              }} 
+            />
+            
+            <button
+              type="button"
+              onClick={() => setActiveTab('url')}
+              className={`relative z-10 flex-1 py-2 text-[10px] font-mono tracking-wider uppercase transition-colors duration-200 flex items-center justify-center space-x-1.5 cursor-pointer ${
+                activeTab === 'url' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'
+              }`}
+            >
+              <LinkIcon className="w-3.5 h-3.5" />
+              <span>URL</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('text')}
+              className={`relative z-10 flex-1 py-2 text-[10px] font-mono tracking-wider uppercase transition-colors duration-200 flex items-center justify-center space-x-1.5 cursor-pointer ${
+                activeTab === 'text' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>TEXT</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('csv')}
+              className={`relative z-10 flex-1 py-2 text-[10px] font-mono tracking-wider uppercase transition-colors duration-200 flex items-center justify-center space-x-1.5 cursor-pointer ${
+                activeTab === 'csv' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'
+              }`}
+            >
+              <Upload className="w-3.5 h-3.5" />
+              <span>CSV</span>
+            </button>
+          </div>
+
+          {/* Ingestion Form with animations */}
+          <form onSubmit={handleIngest} className="space-y-6">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="space-y-6"
               >
-                <LinkIcon className="w-4 h-4" />
-                <span>Product URL</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('text')}
-                className={`flex-1 pb-3 text-sm font-medium border-b-2 transition-all flex items-center justify-center space-x-2 ${
-                  activeTab === 'text'
-                    ? 'border-[var(--accent)] text-[var(--foreground)]'
-                    : 'border-transparent text-[var(--accent-muted)] hover:text-[var(--foreground)]'
-                }`}
-              >
-                <FileText className="w-4 h-4" />
-                <span>Raw Text Paste</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('csv')}
-                className={`flex-1 pb-3 text-sm font-medium border-b-2 transition-all flex items-center justify-center space-x-2 ${
-                  activeTab === 'csv'
-                    ? 'border-[var(--accent)] text-[var(--foreground)]'
-                    : 'border-transparent text-[var(--accent-muted)] hover:text-[var(--foreground)]'
-                }`}
-              >
-                <Upload className="w-4 h-4" />
-                <span>Upload CSV</span>
-              </button>
-            </div>
-
-            {/* Ingestion Forms */}
-            <form onSubmit={handleIngest} className="space-y-4">
-              {activeTab !== 'url' && (
-                <div>
-                  <label className="block text-xs font-mono text-neutral-400 uppercase tracking-widest mb-1.5">
-                    Dataset Reference Name
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Smart Watch Series 8 Reviews"
-                    value={datasetName}
-                    onChange={(e) => setDatasetName(e.target.value)}
-                    className="w-full glass-input px-3.5 py-2.5 text-sm"
-                    disabled={isLoading}
-                  />
-                </div>
-              )}
-
-              {activeTab === 'text' && (
-                <div>
-                  <label className="block text-xs font-mono text-neutral-400 uppercase tracking-widest mb-1.5">
-                    Reviews Content (one review per line)
-                  </label>
-                  <textarea
-                    rows={6}
-                    placeholder="Example:&#10;Excellent device, battery lasts days!&#10;The charger was missing and customer service was slow...&#10;Great build, very scratch-resistant."
-                    value={pastedText}
-                    onChange={(e) => setPastedText(e.target.value)}
-                    className="w-full glass-input px-3.5 py-2.5 text-sm font-sans"
-                    disabled={isLoading}
-                  />
-                </div>
-              )}
-
-              {activeTab === 'csv' && (
-                <div>
-                  <label className="block text-xs font-mono text-neutral-400 uppercase tracking-widest mb-1.5">
-                    Choose CSV File
-                  </label>
-                  <div className="border border-dashed border-white/[0.08] rounded-lg p-8 flex flex-col items-center justify-center hover:border-white/[0.2] transition-colors cursor-pointer bg-white/[0.01]">
+                {activeTab !== 'url' && (
+                  <div>
+                    <label className="block text-[10px] font-mono text-neutral-500 uppercase tracking-widest mb-2">
+                      Dataset Reference Name
+                    </label>
                     <input
-                      type="file"
-                      accept=".csv"
-                      onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
-                      className="hidden"
-                      id="csv-file-picker"
+                      type="text"
+                      placeholder="e.g. Smart Watch Series 8 Reviews"
+                      value={datasetName}
+                      onChange={(e) => setDatasetName(e.target.value)}
+                      className="w-full glass-input px-3.5 py-3 text-sm focus:border-white/[0.2] focus:shadow-[0_0_12px_rgba(255,255,255,0.02)]"
                       disabled={isLoading}
                     />
-                    <label htmlFor="csv-file-picker" className="cursor-pointer flex flex-col items-center">
-                      <Upload className="w-8 h-8 text-neutral-500 mb-2" />
-                      <span className="text-xs text-neutral-300">
-                        {csvFile ? csvFile.name : "Click to select or drop CSV review sheet"}
-                      </span>
-                      <span className="text-[10px] text-neutral-500 mt-1">
-                        Supports multi-megabyte datasets (CSV, Excel exported formats)
-                      </span>
-                    </label>
                   </div>
-                </div>
-              )}
-
-              {activeTab === 'url' && (
-                <div>
-                  <label className="block text-xs font-mono text-neutral-400 uppercase tracking-widest mb-1.5">
-                    Product URL to Crawl
-                  </label>
-                  <input
-                    type="url"
-                    placeholder="https://www.amazon.com/dp/B0CX123456"
-                    value={productUrl}
-                    onChange={(e) => setProductUrl(e.target.value)}
-                    className="w-full glass-input px-3.5 py-2.5 text-sm"
-                    disabled={isLoading}
-                  />
-                  <p className="text-[10px] text-neutral-500 mt-1.5 font-mono">
-                    Scrapes and aggregates feedback metrics dynamically.
-                  </p>
-                </div>
-              )}
-
-              {errorMsg && (
-                <div className="text-xs text-red-400 bg-red-950/20 border border-red-900/30 p-3 rounded font-mono">
-                  {errorMsg}
-                </div>
-              )}
-
-              {/* Submit Trigger */}
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full py-3.5 px-4 bg-white text-black hover:bg-neutral-200 transition-colors duration-200 font-semibold rounded-lg text-sm flex items-center justify-center space-x-2 disabled:opacity-40"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Analyzing reviews...</span>
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-4 h-4 fill-current" />
-                    <span>Run Analysis & Extract Insights</span>
-                  </>
                 )}
-              </button>
-            </form>
-          </div>
+
+                {activeTab === 'text' && (
+                  <div>
+                    <label className="block text-[10px] font-mono text-neutral-500 uppercase tracking-widest mb-2">
+                      Reviews Content (one review per line)
+                    </label>
+                    <textarea
+                      rows={6}
+                      placeholder="Example:&#10;Excellent device, battery lasts days!&#10;The charger was missing and customer service was slow...&#10;Great build, very scratch-resistant."
+                      value={pastedText}
+                      onChange={(e) => setPastedText(e.target.value)}
+                      className="w-full glass-input px-3.5 py-3 text-sm font-sans focus:border-white/[0.2]"
+                      disabled={isLoading}
+                    />
+                  </div>
+                )}
+
+                {activeTab === 'csv' && (
+                  <div>
+                    <label className="block text-[10px] font-mono text-neutral-500 uppercase tracking-widest mb-2">
+                      Choose CSV File
+                    </label>
+                    <div className="border border-dashed border-white/[0.06] rounded-xl p-8 flex flex-col items-center justify-center hover:border-white/[0.16] hover:bg-white/[0.01] transition-all duration-300 cursor-pointer bg-transparent">
+                      <input
+                        type="file"
+                        accept=".csv"
+                        onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
+                        className="hidden"
+                        id="csv-file-picker"
+                        disabled={isLoading}
+                      />
+                      <label htmlFor="csv-file-picker" className="cursor-pointer flex flex-col items-center w-full">
+                        <Upload className="w-6 h-6 text-neutral-500 mb-3" />
+                        <span className="text-xs text-neutral-300 font-sans font-medium">
+                          {csvFile ? csvFile.name : "Select CSV review sheet"}
+                        </span>
+                        <span className="text-[10px] text-neutral-500 mt-1.5 font-mono">
+                          Supports standard UTF-8 reviews tables
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'url' && (
+                  <div>
+                    <label className="block text-[10px] font-mono text-neutral-500 uppercase tracking-widest mb-2">
+                      Product URL to Crawl
+                    </label>
+                    <input
+                      type="url"
+                      placeholder="https://www.amazon.com/dp/B0CX123456"
+                      value={productUrl}
+                      onChange={(e) => setProductUrl(e.target.value)}
+                      className="w-full glass-input px-3.5 py-3 text-sm focus:border-white/[0.2]"
+                      disabled={isLoading}
+                    />
+                    <p className="text-[9px] text-neutral-500 mt-2 font-mono">
+                      Scrapes and aggregates feedback metrics dynamically.
+                    </p>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+
+            {errorMsg && (
+              <div className="text-xs text-red-400 bg-red-950/20 border border-red-900/30 p-3 rounded font-mono">
+                {errorMsg}
+              </div>
+            )}
+
+            {/* Submit Trigger */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3.5 px-4 bg-white text-black hover:bg-neutral-100 transition-all duration-200 font-semibold rounded-lg text-xs tracking-wider uppercase font-mono flex items-center justify-center space-x-2 disabled:opacity-30 cursor-pointer active:scale-[0.99] transform"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Analyzing...</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <span>Run Analysis</span>
+                </>
+              )}
+            </button>
+          </form>
 
           {/* Analysis Loading Status Panel */}
           <AnimatePresence>
@@ -396,132 +384,79 @@ export default function Home() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mt-6 pt-6 border-t border-white/[0.06] flex items-center space-x-3 text-xs font-mono text-neutral-400"
+                className="mt-6 pt-6 border-t border-white/[0.06] flex items-center space-x-3 text-xs font-mono text-neutral-500"
               >
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-neutral-300" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-neutral-400" />
                 <span className="animate-pulse">{statusMessage}</span>
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </motion.div>
 
-        {/* Right Column: Premium Auth Panel & Ingestion History */}
-        <div className="space-y-6">
-          
-          {/* Simulated Premium Auth */}
-          <div className="glass-panel p-6">
-            <h3 className="text-xs font-mono text-[var(--accent-muted)] uppercase tracking-widest mb-4">
-              Premium Portal
-            </h3>
-
-            {user ? (
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3 bg-[var(--surface)] border border-[var(--border-color)] p-3 rounded-lg">
-                  <img src={user.avatar} alt="Avatar" className="w-10 h-10 rounded-full border border-[var(--border-color)]" />
-                  <div>
-                    <h4 className="text-sm font-semibold text-[var(--foreground)]">{user.name}</h4>
-                    <p className="text-xs text-[var(--accent-muted)]">{user.email}</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="px-2 py-0.5 rounded bg-[var(--surface)] text-[var(--accent-muted)] border border-[var(--border-color)]">
-                    {user.tier}
-                  </span>
-                  <button onClick={handleLogout} className="text-red-500 hover:text-red-400 cursor-pointer">
-                    Logout
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <p className="text-xs text-[var(--accent-muted)] font-sans leading-relaxed mb-1">
-                  Access enterprise dashboard caching and large multi-megabyte CSV processing by linking your account.
-                </p>
-                <button
-                  onClick={() => handleMockLogin('google')}
-                  disabled={isLoggingIn !== null}
-                  className="w-full py-2.5 px-3 rounded bg-[var(--surface)] border border-[var(--border-color)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] text-xs font-medium text-[var(--foreground)] flex items-center justify-center space-x-2 transition-all disabled:opacity-40 cursor-pointer"
-                >
-                  {isLoggingIn === 'google' ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
-                  )}
-                  <span>Sign in with Google OAuth</span>
-                </button>
-                <button
-                  onClick={() => handleMockLogin('github')}
-                  disabled={isLoggingIn !== null}
-                  className="w-full py-2.5 px-3 rounded bg-[var(--surface)] border border-[var(--border-color)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] text-xs font-medium text-[var(--foreground)] flex items-center justify-center space-x-2 transition-all disabled:opacity-40 cursor-pointer"
-                >
-                  {isLoggingIn === 'github' ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-                  )}
-                  <span>Sign in with GitHub OAuth</span>
-                </button>
-              </div>
+        {/* Center/Underneath History Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="space-y-4"
+        >
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+              [ 02 // History ]
+            </span>
+            {history.length > 0 && (
+              <button
+                onClick={clearAllHistory}
+                className="text-[10px] font-mono text-neutral-500 hover:text-red-400 cursor-pointer transition-colors bg-transparent border-0 p-0 flex items-center space-x-1"
+              >
+                <span>Clear All</span>
+              </button>
             )}
           </div>
 
-          {/* History / Previously Parsed Datasets */}
-          <div className="glass-panel p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xs font-mono text-[var(--accent-muted)] uppercase tracking-widest">
-                Analysis History
-              </h3>
-              {history.length > 0 && (
-                <button
-                  onClick={clearAllHistory}
-                  className="text-[10px] font-mono text-red-500 hover:text-red-400 cursor-pointer transition-colors bg-transparent border-0 p-0 flex items-center space-x-1"
-                >
-                  <span>Clear All</span>
-                </button>
-              )}
+          {history.length === 0 ? (
+            <div className="text-center py-8 rounded-xl border border-white/[0.04] bg-white/[0.01] text-xs text-neutral-600 font-mono">
+              No active records
             </div>
-            
-            {history.length === 0 ? (
-              <div className="text-center py-6 text-xs text-[var(--accent-muted)] font-mono">
-                No analyzed datasets found.
-              </div>
-            ) : (
-              <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-                {history.map((item) => (
-                  <div
-                    key={item.id}
-                    onClick={() => router.push(`/dashboard?id=${item.id}&t=${Date.now()}`)}
-                    className="group w-full p-3 text-left rounded-lg bg-[var(--surface)] border border-[var(--border-color)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] transition-all flex items-center justify-between cursor-pointer"
-                  >
-                    <div className="flex items-center space-x-3 min-w-0">
-                      <div className="p-2 rounded bg-[var(--background)] border border-[var(--border-color)] flex items-center justify-center">
-                        {getSourceIcon(item.source_type)}
-                      </div>
-                      <div className="truncate">
-                        <p className="text-xs font-semibold text-[var(--foreground)] group-hover:text-[var(--accent)] transition-colors truncate">
-                          {item.name}
-                        </p>
-                        <p className="text-[10px] text-[var(--accent-muted)] font-mono mt-0.5">
-                          {new Date(item.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
+          ) : (
+            <div className="space-y-2">
+              {history.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => router.push(`/dashboard?id=${item.id}&t=${Date.now()}`)}
+                  className="group relative w-full p-3 rounded-xl bg-[#070707]/40 border border-white/[0.04] hover:bg-white/[0.02] hover:border-white/[0.1] transition-all flex items-center justify-between cursor-pointer"
+                >
+                  <div className="flex items-center space-x-3 min-w-0">
+                    <div className="p-2 rounded-lg bg-black/40 border border-white/[0.04] flex items-center justify-center">
+                      {getSourceIcon(item.source_type)}
                     </div>
-                    <div className="flex items-center space-x-1">
-                      <button
-                        onClick={(e) => deleteDataset(item.id, e)}
-                        className="p-1 opacity-0 group-hover:opacity-100 hover:text-red-400 text-[var(--accent-muted)] transition-all rounded cursor-pointer"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                      <ChevronRight className="w-4 h-4 text-[var(--accent-muted)] group-hover:text-[var(--foreground)] transition-colors" />
+                    <div className="truncate">
+                      <p className="text-xs font-medium text-neutral-300 group-hover:text-white transition-colors truncate">
+                        {item.name}
+                      </p>
+                      <p className="text-[9px] text-neutral-500 font-mono mt-0.5">
+                        {new Date(item.created_at).toLocaleDateString(undefined, {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </p>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-        </div>
+                  <div className="flex items-center space-x-1.5">
+                    <button
+                      onClick={(e) => deleteDataset(item.id, e)}
+                      className="p-1.5 opacity-0 group-hover:opacity-100 hover:text-red-400 text-neutral-500 transition-all rounded cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                    <ChevronRight className="w-3.5 h-3.5 text-neutral-500 group-hover:text-white transition-colors" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </motion.div>
 
       </div>
     </div>
